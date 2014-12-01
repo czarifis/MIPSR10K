@@ -3,28 +3,41 @@ Created on Nov 30, 2014
 
 @author: Costas Zarifis
 '''
+
+# Imports
 import IF.Fetch as IF
+import ID.Decode as ID
 import argparse
 import pandas as pd 
 import numpy as np
 import Models.prettifyme as pr
+class Main:
+    def __init__(self):
+        self.clc = 0
+        IFIDReg = {}
+
+    def calc(self,df,args,IfStage,IdStage):
+        # print 'global calc'
+        
+        instructions = IfStage.calc(df,args)
+        if self.clc > 1:
+            print self.IFIDReg
+            IdStage.calc(df,self.IFIDReg)
+
+        self.IFIDReg = instructions
 
 
-def calc(df,args):
-    print 'global calc'
-    IfStage = IF.Fetch()
-    IfStage.calc(df,args)
-
-
-def edge():
-    print 'call the edge function of each stage'
-    IfStage = IF.Fetch()
-    IfStage.edge()
+    def edge(self,df,IfStage,IdStage):
+        # print 'call the edge function of each stage'
+        IfStage.edge(df)
+        if self.clc > 1:
+            IdStage.edge(df)
 
 
 
+# main function 
 if __name__ == '__main__':
-    # main function 
+    
    
     # Declaring Arguments
     parser = argparse.ArgumentParser()
@@ -37,22 +50,32 @@ if __name__ == '__main__':
         # if not add the default input file
         args.filename = open('benchmarks/default.txt', 'r')
         
+    # Checking if output argument is given
+    if args.output == None:
+        args.output = 'output.html'
+    
+    df = pd.DataFrame(columns=('Instruction','1')) 
+    
 
-    print args.filename
-    df = pd.DataFrame(np.random.randn(2, 2)) 
-    
-    
+    # Initializing stages
+    m = Main()
+    IfStage = IF.Fetch()
+    IdStage = ID.Decode()
     # while True:
-    for i in range(2):
-        calc(df,args)
-        edge()
+    
+    # compute number of clocks (might need to do sth better than this)
+    clocks = sum(1 for line in args.filename)
+    print 'clocks',clocks
+
+    # reset file pointer
+    args.filename.seek(0)
+
+    for i in range(clocks):
+        m.clc = i+1
+        m.calc(df,args,IfStage,IdStage)
+        m.edge(df,IfStage,IdStage)
     
     # class providing printing functionalities
     pm = pr.prettifyme()
     
-    # Checking if output argument is given
-    if args.output != None:
-        pm.printme(df, args.output)
-    else:
-        pm.printme(df,'output.html')
-    
+    pm.printme(df, args.output)
