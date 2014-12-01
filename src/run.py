@@ -10,10 +10,10 @@ import numpy as np
 import Models.prettifyme as pr
 
 
-def calc(args):
+def calc(df,args):
     print 'global calc'
     IfStage = IF.Fetch()
-    IfStage.calc(args)
+    IfStage.calc(df,args)
 
 
 def edge():
@@ -39,7 +39,7 @@ if __name__ == '__main__':
         
 
     print args.filename
-    df = pd.DataFrame(np.random.randn(10, 2)) 
+    df = pd.DataFrame(np.random.randn(2, 2)) 
     
     
     # while True:

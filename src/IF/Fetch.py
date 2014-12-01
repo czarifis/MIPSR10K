@@ -9,7 +9,7 @@ Created on Nov 30, 2014
 This class provides all the functionality for fetching instructions
 '''
 class Fetch:
-    def calc(self,args):
+    def calc(self,df,args):
         print 'Fetch calc'
         i = 0
         for line in args.filename:
