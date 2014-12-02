@@ -59,16 +59,54 @@ class Instruction:
             self.comment = None
 
 
-        print 'comment is:',self.comment
+        # print 'comment is:',self.comment
         instruction = firstSplit[0]
         instructionElems = instr.split(' ')
         op = instructionElems[0]
-        print 'opcode is:', op
+        # print 'opcode is:', op
+        self.op = op
         if op == 'L':
             # This is a load instruction
-            
+            self.rt = 'r'+str(int(instructionElems[2],16))
+            self.rs = 'r'+str(int(instructionElems[1],16))
+            self.extra = instructionElems[4]
+        elif op == 'S':
+            # This is a store instruction
+            self.rt = 'r'+str(int(instructionElems[2],16))
+            self.rs = 'r'+str(int(instructionElems[1],16))
+            self.extra = instructionElems[4]
+        elif op == 'I':
+            self.rs = 'r'+str(int(instructionElems[1],16))
+            self.rt = 'r'+str(int(instructionElems[2],16))
+            self.rd = 'r'+str(int(instructionElems[3],16))
+        elif op == 'A':
+            self.rs = 'r'+str(int(instructionElems[1],16))
+            self.rt = 'r'+str(int(instructionElems[2],16))
+            self.rd = 'r'+str(int(instructionElems[3],16))
+        elif op == 'M':
+            self.rs = 'r'+str(int(instructionElems[1],16))
+            self.rt = 'r'+str(int(instructionElems[2],16))
+            self.rd = 'r'+str(int(instructionElems[3],16))
+        elif op == 'B':
+            self.rs = 'r'+str(int(instructionElems[1],16))
+            self.rt = 'r'+str(int(instructionElems[2],16))
+            self.prediction = instructionElems[4]
 
         # pass
+
+    def printInstr(self):
+        if self.op == 'L':
+            print self.rt,'<-',self.extra,'(',self.rs,')'
+        elif self.op == 'S':
+            print self.rt,'->',self.extra,'(',self.rs,')'
+        elif self.op == 'I':
+            print self.rd,'<-',self.rs,'INTOP',self.rt
+        elif self.op == 'A':
+            print self.rd,'<-',self.rs,'FPADD',self.rt
+        elif self.op == 'M':
+            print self.rd,'<-',self.rs,'FPMUL',self.rt
+        elif self.op == 'B':
+            print 'BEQ,',self.rs,',',self.rt,',xx,',self.prediction
 
 
     def parseInstr(instr):
@@ -79,3 +117,4 @@ class Instruction:
         instruction = firstSplit[0]
         instructionElems = instr.split(' ')
         print 'opcode is:',instructionElems[0]
+

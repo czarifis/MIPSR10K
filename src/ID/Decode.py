@@ -22,7 +22,7 @@ class Decode:
     def calc(self,df,instructions):
         # print 'Decode calc'
         if instructions is not None:
-            print instructions
+            # print instructions
             # Inst = ins.Instruction()
             
             self.currInstrs = instructions
@@ -34,6 +34,7 @@ class Decode:
             actualInstr = self.currInstrs[instr]
             print 'Instruction about to get decoded:',actualInstr
             Inst = ins.Instruction(actualInstr)
+            Inst.printInstr()
        
             
 
@@ -44,7 +45,7 @@ class Decode:
         if self.currInstrs is not None:
             for k in self.currInstrs.keys():
                 
-                print k,self.clc
+                # print k,self.clc
                 df.xs(k)[self.clc] = 'ID'
 
             # empty the "queue"
