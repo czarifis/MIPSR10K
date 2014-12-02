@@ -8,12 +8,14 @@ Created on Nov 30, 2014
 '''
 This class provides all the functionality for decoding instructions
 '''
+import Models.Instruction as ins
+
 class Decode:
 
     def __init__(self):
         self.i = 0
-        self.currInstrs = {}
-        self.clc = 1
+        self.currInstrs = None
+        self.clc = 0
 
     
 
@@ -21,23 +23,32 @@ class Decode:
         # print 'Decode calc'
         if instructions is not None:
             print instructions
+            # Inst = ins.Instruction()
+            
             self.currInstrs = instructions
-        pass
+            self.iterOverInstructions()
         
+        
+    def iterOverInstructions(self):
+        for instr in self.currInstrs:
+            actualInstr = self.currInstrs[instr]
+            print 'Instruction about to get decoded:',actualInstr
+            Inst = ins.Instruction(actualInstr)
        
             
 
     def edge(self,df):
         self.clc+=1
-        print 'Decode edge'
+        # print 'Decode edge'
 
-        for k in self.currInstrs.keys():
-            
-            print k,self.clc
-            df.xs(k)[self.clc] = 'ID'
+        if self.currInstrs is not None:
+            for k in self.currInstrs.keys():
+                
+                print k,self.clc
+                df.xs(k)[self.clc] = 'ID'
 
-        # empty the "queue"
-        self.currInstrs = {}
+            # empty the "queue"
+            self.currInstrs = None
        
         
 

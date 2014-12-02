@@ -14,15 +14,15 @@ import Models.prettifyme as pr
 class Main:
     def __init__(self):
         self.clc = 0
-        IFIDReg = {}
+        self.IFIDReg = None
 
     def calc(self,df,args,IfStage,IdStage):
         # print 'global calc'
         
         instructions = IfStage.calc(df,args)
-        if self.clc > 1:
-            print self.IFIDReg
-            IdStage.calc(df,self.IFIDReg)
+        # if self.clc > 1:
+        # print self.IFIDReg
+        IdStage.calc(df,self.IFIDReg)
 
         self.IFIDReg = instructions
 
@@ -30,8 +30,8 @@ class Main:
     def edge(self,df,IfStage,IdStage):
         # print 'call the edge function of each stage'
         IfStage.edge(df)
-        if self.clc > 1:
-            IdStage.edge(df)
+        # if self.clc > 1:
+        IdStage.edge(df)
 
 
 
