@@ -1,9 +1,11 @@
 class FreeList:
 
     def __init__(self):
-        self.list = []
+        self.list = [] # List with free physical registers
+        self.busy = {} # This dict keeps whether a physical register is busy or not 
         for i in range(64):
             self.list.append('I'+str(i))
+            self.busy['I'+str(i)] = False
 
     '''
         This function assigns(returns and removes from the list) a physical register.
@@ -13,6 +15,7 @@ class FreeList:
         try:
             assigned = self.list[0]
             self.list.remove(assigned)
+            self.busy[assigned] = True
             return assigned
         except:
             return None
@@ -40,13 +43,14 @@ class FreeList:
     def free(self,l):
         assert isinstance(l,list)
         for e in l:
-            self.list.append(e)
+            self.freeReg(e)
 
     '''
         This is similar to the previous one but for a single register
     '''
     def freeReg(self,r):
         self.list.append(r)
+        self.busy[r] = False
 
 if __name__ == '__main__':
     l = FreeList()

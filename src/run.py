@@ -18,10 +18,12 @@ import argparse
 import pandas as pd 
 import numpy as np
 import Models.prettifyme as pr
+import Models.ActiveList as ActiveList
 class Main:
     def __init__(self):
         self.clc = 0
         self.IFIDReg = None
+        self.ActiveList = ActiveList.ActiveList()
 
     def calc(self,df,args,IfStage,IdStage):
         # print 'global calc'
@@ -29,7 +31,10 @@ class Main:
         instructions = IfStage.calc(df,args)
         # if self.clc > 1:
         # print self.IFIDReg
-        IdStage.calc(df,self.IFIDReg)
+
+        # Passing the IF/ID register (which holds the instrucctions)
+        # and the Active List (ROB)
+        IdStage.calc(df,self.IFIDReg,self.ActiveList)
 
         self.IFIDReg = instructions
 
@@ -38,7 +43,7 @@ class Main:
         # print 'call the edge function of each stage'
         IfStage.edge(df)
         # if self.clc > 1:
-        IdStage.edge(df)
+        IdStage.edge(df,self.ActiveList)
 
 
 

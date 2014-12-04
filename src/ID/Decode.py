@@ -22,7 +22,7 @@ Notes:
     * Integer AND FP free lists contain list of currently unassigned physical registers
 
 '''
-level Models.Instruction as ins
+import Models.Instruction as ins
 
 class Decode:
 
@@ -33,26 +33,28 @@ class Decode:
 
     
 
-    def calc(self,df,instructions):
+    def calc(self,df,instructions,activeList):
         # print 'Decode calc'
         if instructions is not None:
             # print instructions
             # Inst = ins.Instruction()
             
             self.currInstrs = instructions
-            self.iterOverInstructions()
+            self.iterOverInstructions(activeList)
         
-        
-    def iterOverInstructions(self):
+    # This function iterates over 4 instructions at each cycle
+    def iterOverInstructions(self,activeList):
         for instr in self.currInstrs:
             actualInstr = self.currInstrs[instr]
             print 'Instruction about to get decoded:',actualInstr
             Inst = ins.Instruction(actualInstr)
             Inst.printInstr()
+
+            activeList.process(Inst)
        
             
 
-    def edge(self,df):
+    def edge(self,df,activeList):
         self.clc+=1
         # print 'Decode edge'
 
@@ -64,6 +66,8 @@ class Decode:
 
             # empty the "queue"
             self.currInstrs = None
+
+        print activeList.map.prettyTable()
        
         
 
