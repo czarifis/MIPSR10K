@@ -1,11 +1,12 @@
 class RegisterMapTables:
     def __init__(self):
         self.LogToPhy = {}
+        self
 
         for i in range(32):
-            self.LogToPhy[i] = i
+            self.LogToPhy['r'+str(i)] = 'I'+str(i)
 
-    def setLog2Phy(log,phy):
+    def setLog2Phy(self,log,phy):
         self.LogToPhy[log]=phy
 
 
@@ -38,3 +39,9 @@ class RegisterMapTables:
             s.append('</tr>\n')
         s.append('</table>')
         return '\n'.join(s)
+
+    def toString(self):
+        s = ''
+        for k in self.LogToPhy.keys():
+            s = s+' '+str(k)+':'+str(self.LogToPhy[k])+''
+        return s

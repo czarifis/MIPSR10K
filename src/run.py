@@ -19,6 +19,9 @@ import pandas as pd
 import numpy as np
 import Models.prettifyme as pr
 import Models.ActiveList as ActiveList
+
+
+
 class Main:
     def __init__(self):
         self.clc = 0
@@ -39,11 +42,11 @@ class Main:
         self.IFIDReg = instructions
 
 
-    def edge(self,df,IfStage,IdStage):
+    def edge(self,df,dfMap,IfStage,IdStage):
         # print 'call the edge function of each stage'
-        IfStage.edge(df)
+        IfStage.edge(df,dfMap)
         # if self.clc > 1:
-        IdStage.edge(df,self.ActiveList)
+        IdStage.edge(df,dfMap,self.ActiveList)
 
 
 
@@ -64,9 +67,10 @@ if __name__ == '__main__':
         
     # Checking if output argument is given
     if args.output == None:
-        args.output = 'output.html'
+        args.output = 'output'
     
-    df = pd.DataFrame(columns=('Instruction','1')) 
+    df = pd.DataFrame(columns=('Instruction','1'))
+    dfMap = pd.DataFrame(columns=('Register Map Table','1')) 
     
 
     # Initializing stages
@@ -85,9 +89,10 @@ if __name__ == '__main__':
     for i in range(clocks):
         m.clc = i+1
         m.calc(df,args,IfStage,IdStage)
-        m.edge(df,IfStage,IdStage)
+        m.edge(df,dfMap,IfStage,IdStage)
     
-    # class providing printing functionalities
+    # class providing printing functionalitu
     pm = pr.prettifyme()
     
-    pm.printme(df, args.output)
+    pm.printme(df,dfMap, args.output)
+    # pm.printme(dfMap, 'map'+args.output+'.json')

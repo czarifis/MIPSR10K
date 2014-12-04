@@ -36,17 +36,27 @@ class Fetch:
        
             
 
-    def edge(self,df):
+    def edge(self,df,dfMap):
         self.clc+=1
+        a = ['' for n in range(self.clc)]
         if self.clc>1:
             df[self.clc] = ' '
+            dfMap[self.clc] = ' '
+        elif self.clc==1:
+            dfMap.loc[1] = ['Register Map Table'] + a 
 
+
+        
+       
         for k in self.currInstrs.keys():
-            a = ['' for n in range(self.clc)]
+            
             
             df.loc[k] = [self.currInstrs[k]] + a 
 
             df.xs(k)[self.clc] = 'IF'
+
+        # dfMap.loc[1] = a 
+        # dfMap.xs(1)[self.clc] = 'a'
        
         # print 'Fetch edge'
 

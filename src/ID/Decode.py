@@ -54,20 +54,22 @@ class Decode:
        
             
 
-    def edge(self,df,activeList):
+    def edge(self,df,dfMap,activeList):
         self.clc+=1
         # print 'Decode edge'
+        dfMap.xs(1)[self.clc-1] = activeList.map.toString()
 
         if self.currInstrs is not None:
             for k in self.currInstrs.keys():
                 
-                # print k,self.clc
+                print k,self.clc
                 df.xs(k)[self.clc] = 'ID'
 
             # empty the "queue"
             self.currInstrs = None
-
-        print activeList.map.prettyTable()
+            
+            # dfMap.xs(0)[self.clc] = activeList.map.prettyTable()
+        
        
         
 
