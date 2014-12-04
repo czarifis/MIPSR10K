@@ -4,6 +4,13 @@ Created on Nov 30, 2014
 @author: Costas Zarifis
 '''
 
+'''
+Note: According to this: https://groups.google.com/forum/#!searchin/cse-240a-fa14/re-order$20buffer/cse-240a-fa14/GY-_iQot_NI/E1zRTGOojvQJ
+ROB == Active list
+
+'''
+
+
 # Imports
 import IF.Fetch as IF
 import ID.Decode as ID

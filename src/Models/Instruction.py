@@ -109,12 +109,4 @@ class Instruction:
             print 'BEQ,',self.rs,',',self.rt,',xx,',self.prediction
 
 
-    def parseInstr(instr):
-
-        firstSplit = instr.split('#')
-        comment = firstSplit[1]
-        print 'comment is:',comment
-        instruction = firstSplit[0]
-        instructionElems = instr.split(' ')
-        print 'opcode is:',instructionElems[0]
 
