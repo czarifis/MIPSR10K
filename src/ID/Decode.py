@@ -30,11 +30,13 @@ class Decode:
         self.i = 0
         self.currInstrs = None
         self.clc = 0
+        self.currDecodedInstrs = {}
 
     
 
     def calc(self,df,instructions,activeList):
         # print 'Decode calc'
+       
         if instructions is not None:
             # print instructions
             # Inst = ins.Instruction()
@@ -49,7 +51,7 @@ class Decode:
             print 'Instruction about to get decoded:',actualInstr
             Inst = ins.Instruction(actualInstr)
             Inst.printInstr()
-
+            self.currDecodedInstrs[instr] = Inst
             activeList.process(Inst)
        
             
@@ -58,9 +60,18 @@ class Decode:
         self.clc+=1
         # print 'Decode edge'
         dfMap.xs(1)[self.clc] = activeList.map.toString()
+        dfMap.xs(2)[self.clc] = activeList.map.Note
+
+
+            
 
         if self.currInstrs is not None:
             for k in self.currInstrs.keys():
+                # print 'assigning this:',self.currInstrs[k] ,'sth', self.currDecodedInstrs[k]
+                # df.xs(k)['Instruction'] = ''+self.currInstrs[k] +' # Decoded: '+ self.currDecodedInstrs[k]
+                df.xs(k)['Logical'] = self.currDecodedInstrs[k].toStr()
+                df.xs(k)['Physical'] = self.currDecodedInstrs[k].toMappedStr(activeList.map.LogToPhy)
+                
                 
                 print k,self.clc
                 df.xs(k)[self.clc] = 'ID'

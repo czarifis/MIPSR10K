@@ -1,14 +1,24 @@
+from collections import defaultdict
 class RegisterMapTables:
     def __init__(self):
-        self.LogToPhy = {}
-        self
+        self.LogToPhy = defaultdict(list)
+        self.Note = ''
 
-        for i in range(32):
-            self.LogToPhy['r'+str(i)] = 'I'+str(i)
+        # for i in range(32):
+        #     self.LogToPhy['r'+str(i)] = 'I'+str(i)
 
     def setLog2Phy(self,log,phy):
-        self.LogToPhy[log]=phy
+        if phy not in self.LogToPhy[log]:
+            self.LogToPhy[log].append(phy)
 
+    def setNote(self,note):
+        self.Note = note
+
+    def isMapped(self,key):
+        try:
+            return self.LogToPhy[key][-1]
+        except:
+            return None
 
     def prettyTable(self, cssClass=''):
         dictionary = self.LogToPhy
@@ -44,4 +54,5 @@ class RegisterMapTables:
         s = ''
         for k in self.LogToPhy.keys():
             s = s+' '+str(k)+':'+str(self.LogToPhy[k])+''
+        # print 'TABLE',s
         return s

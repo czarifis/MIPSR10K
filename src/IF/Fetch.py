@@ -24,14 +24,17 @@ class Fetch:
             # self.currInstrs.append(currLineStr)
             self.i+=1
             self.currInstrs[self.i] = currLineStr
-            
+            # print 'line',line
             if self.i%4==0:
                 return self.currInstrs
+        # These are the last lines which have not been returned so far
+        return self.currInstrs
         # print df.head()
 
     def calc(self,df,args):
         # print 'Fetch calc'
         ret = self.fetch4linesPerClck(df,args)
+        # print 'IF calc:',ret
         return ret
        
             
@@ -43,17 +46,13 @@ class Fetch:
             df[self.clc] = ' '
             dfMap[self.clc] = ' '
         elif self.clc==1:
-            dfMap.loc[1] = ['Register Map Table'] + a 
-
-
+            dfMap.loc[1] = ['Table:'] + a 
+            dfMap.loc[2] = ['Notes:'] + a 
         
        
         for k in self.currInstrs.keys():
-            
-            
-            df.loc[k] = [self.currInstrs[k]] + a 
-
-            df.xs(k)[self.clc] = 'IF'
+            df.loc[k] = [self.currInstrs[k],'',''] + a 
+            df.xs(k)[str(self.clc)] = 'IF'
 
         # dfMap.loc[1] = a 
         # dfMap.xs(1)[self.clc] = 'a'

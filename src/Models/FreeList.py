@@ -11,14 +11,19 @@ class FreeList:
         This function assigns(returns and removes from the list) a physical register.
         If the list is empty it returns None 
     '''
-    def assign(self):
-        try:
-            assigned = self.list[0]
-            self.list.remove(assigned)
-            self.busy[assigned] = True
-            return assigned
-        except:
-            return None
+    def assign(self,source = None):
+        if source == None:
+            print 'yolo'
+            try:
+                assigned = self.list[0]
+                self.list.remove(assigned)
+                self.busy[assigned] = True
+                return assigned
+            except:
+                return None
+        else:
+            print 'non yolo'
+        
 
     '''
         This function returns 4 registers in parallel or 

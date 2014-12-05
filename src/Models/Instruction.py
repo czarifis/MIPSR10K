@@ -22,7 +22,9 @@ class Instruction:
             of the branch are exactly the same as the correct path.
         '''
         self.prediction = None 
-        self.comment = None # comment next to command after char : '#'
+        self.comment = '' # comment next to command after char : '#'
+        self.decoding = '' # the decoded instruction is going to be added as a comment
+        self.MappedDecoding = '' # The decoded instruction with the mapped physical registers
 
         # Create a hash for easier access and less confusion :)
         self.getVal = {
@@ -93,20 +95,41 @@ class Instruction:
             self.prediction = instructionElems[4]
 
         # pass
+    def add2Comment(self,comment):
+        # print 'soon to be comment:', str(self.comment)+str(comment)
+        self.comment = str(self.comment)+str(comment)
+
+    def add2MappedDecoding(self,mappedDec):
+        # print 'soon to be mapped:',mappedDec
+        self.MappedDecoding = str(mappedDec)[1:-1].replace("'","").replace(",","")
+
+
+    def add2Decoding(self,dec):
+        self.decoding = ''.join(dec[1:-1]).replace("'","").replace(",","")
 
     def printInstr(self):
         if self.op == 'L':
-            print self.rt,'<-',self.extra,'(',self.rs,')'
+            ret = self.rt,'<-',self.extra,'(',self.rs,')'
+            # print self.rt,'<-',self.extra,'(',self.rs,')'
         elif self.op == 'S':
-            print self.rt,'->',self.extra,'(',self.rs,')'
+            ret = self.rt,'->',self.extra,'(',self.rs,')'
         elif self.op == 'I':
-            print self.rd,'<-',self.rs,'INTOP',self.rt
+            ret = self.rd,'<-',self.rs,'INTOP',self.rt
         elif self.op == 'A':
-            print self.rd,'<-',self.rs,'FPADD',self.rt
+            ret = self.rd,'<-',self.rs,'FPADD',self.rt
         elif self.op == 'M':
-            print self.rd,'<-',self.rs,'FPMUL',self.rt
+            ret = self.rd,'<-',self.rs,'FPMUL',self.rt
         elif self.op == 'B':
-            print 'BEQ,',self.rs,',',self.rt,',xx,',self.prediction
+            ret = 'BEQ,',self.rs,',',self.rt,',xx,',self.prediction
+        ret = str(ret)#''.join(ret)
+        self.add2Decoding(ret)
+        print ret
+        return ret
 
+    def toStr(self):
+        ret = self.decoding
+        return ret
 
-
+    def toMappedStr(self,map):
+        # print 'map',map
+        return self.MappedDecoding

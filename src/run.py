@@ -38,7 +38,7 @@ class Main:
         # Passing the IF/ID register (which holds the instrucctions)
         # and the Active List (ROB)
         IdStage.calc(df,self.IFIDReg,self.ActiveList)
-
+        # print '##### Instructions:',instructions,'#####'
         self.IFIDReg = instructions
 
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     if args.output == None:
         args.output = 'output'
     
-    df = pd.DataFrame(columns=('Instruction','1'))
+    df = pd.DataFrame(columns=('Instruction','Logical','Physical','1'))
     dfMap = pd.DataFrame(columns=('Register Map Table','1')) 
     
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     # while True:
     
     # compute number of clocks (might need to do sth better than this)
-    clocks = sum(1 for line in args.filename)
+    clocks = sum(1 for line in args.filename)+10
     print 'clocks',clocks
 
     # reset file pointer
