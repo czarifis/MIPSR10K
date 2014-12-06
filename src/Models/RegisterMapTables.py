@@ -1,3 +1,8 @@
+'''
+Created on Dec 2, 2014
+
+@author: Costas Zarifis
+'''
 from collections import defaultdict
 class RegisterMapTables:
     def __init__(self):
@@ -7,14 +12,14 @@ class RegisterMapTables:
         # for i in range(32):
         #     self.LogToPhy['r'+str(i)] = 'I'+str(i)
 
-    def setLog2Phy(self,log,phy):
+    def setLog2Phy(self, log, phy):
         if phy not in self.LogToPhy[log]:
             self.LogToPhy[log].append(phy)
 
     def setNote(self,note):
         self.Note = note
 
-    def isMapped(self,key):
+    def isMapped(self, key):
         try:
             return self.LogToPhy[key][-1]
         except:

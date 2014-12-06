@@ -1,275 +1,51 @@
-clocks 38
-I 07 08 1D    # (r29=r7 INTOP r8)
-A 02 13 15    # (r21=r2 FPADD r19)
-M 03 04 02    # (r2  =r3 FPMUL r4)
-L 1f 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])
-IF calc: {1: 'I 07 08 1D    # (r29=r7 INTOP r8)', 2: 'A 02 13 15    # (r21=r2 FPADD r19)', 3: 'M 03 04 02    # (r2  =r3 FPMUL r4)', 4: 'L 1f 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])'}
+ROB [<Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0b90>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0bd8>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0c20>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0c68>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0cb0>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0cf8>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0d40>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0d88>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0dd0>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0e18>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0e60>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0ea8>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0ef0>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0f38>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0f80>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712a0fc8>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae050>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae098>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae0e0>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae128>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae170>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae1b8>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae200>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae248>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae290>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae2d8>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae320>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae368>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae3b0>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae3f8>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae440>, <Models.ActiveList.ActiveListRecord instance at 0x7fd3712ae488>]
+clocks 15
+I 07 08 1D
+A 15 1D 02
+M 03 04 02
+L 02 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])
 S 10 12 xx ABCD1234  # (MEM[r16+imm] which is MEM [ABCD1234] = r18)
-B 09 08 xx 1
-B 09 05 xx 0
-I 07 08 1D    # (r29=r7 INTOP r8)
-IF calc: {8: 'I 07 08 1D    # (r29=r7 INTOP r8)', 5: 'S 10 12 xx ABCD1234  # (MEM[r16+imm] which is MEM [ABCD1234] = r18)', 6: 'B 09 08 xx 1', 7: 'B 09 05 xx 0'}
-Instruction about to get decoded: I 07 08 1D    # (r29=r7 INTOP r8)
-soon to be comment: ('r29', '<-', 'r7', 'INTOP', 'r8')
+Instruction about to get decoded: I 07 08 1D
 ('r29', '<-', 'r7', 'INTOP', 'r8')
+Assigning a new physical register
+Assigning a new physical register
+Assigning a new physical register
 will map the following:
-r29 -> I0
-r7 -> I1
-r8 -> I2
+r29 -> I2
+r7 -> I0
+r8 -> I1
+Instruction about to get decoded: A 15 1D 02
+('r2', '<-', 'r21', 'FPADD', 'r29')
+Assigning a new physical register
+Assigning a new physical register
 will map the following:
-r29 -> I0
-r7 -> I1
-r8 -> I2
-Instruction about to get decoded: A 02 13 15    # (r21=r2 FPADD r19)
-soon to be comment: ('r21', '<-', 'r2', 'FPADD', 'r19')
-('r21', '<-', 'r2', 'FPADD', 'r19')
-will map the following:
-r21 -> I3
 r2 -> I4
-r19 -> I5
-Instruction about to get decoded: M 03 04 02    # (r2  =r3 FPMUL r4)
-soon to be comment: ('r2', '<-', 'r3', 'FPMUL', 'r4')
+r21 -> I3
+r29 -> I2
+Instruction about to get decoded: M 03 04 02
 ('r2', '<-', 'r3', 'FPMUL', 'r4')
+Assigning a new physical register
+Assigning a new physical register
+Assigning a new physical register
 will map the following:
-r2 -> I6
-r3 -> I7
-r4 -> I8
-Instruction about to get decoded: L 1f 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])
-soon to be comment: ('r18', '<-', 'ABCD1234', '(', 'r31', ')')
-('r18', '<-', 'ABCD1234', '(', 'r31', ')')
+r2 -> I7
+r3 -> I5
+r4 -> I6
+Instruction about to get decoded: L 02 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])
+('r18', '<-', 'ABCD1234', '(', 'r2', ')')
+potential hazard
+Assigning a new physical register
+will map the following:
+r2 -> I7
+r18 -> I8
 1 2
 2 2
 3 2
 4 2
-A 02 13 15    # (r21=r2 FPADD r19)
-M 03 04 02    # (r2  =r3 FPMUL r4)
-L 1f 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])
-S 10 12 xx ABCD1234  # (MEM[r16+imm] which is MEM [ABCD1234] = r18)
-IF calc: {9: 'A 02 13 15    # (r21=r2 FPADD r19)', 10: 'M 03 04 02    # (r2  =r3 FPMUL r4)', 11: 'L 1f 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])', 12: 'S 10 12 xx ABCD1234  # (MEM[r16+imm] which is MEM [ABCD1234] = r18)'}
-Instruction about to get decoded: I 07 08 1D    # (r29=r7 INTOP r8)
-soon to be comment: ('r29', '<-', 'r7', 'INTOP', 'r8')
-('r29', '<-', 'r7', 'INTOP', 'r8')
-will map the following:
-r29 -> I9
-r7 -> I10
-r8 -> I11
-will map the following:
-r29 -> I9
-r7 -> I10
-r8 -> I11
 Instruction about to get decoded: S 10 12 xx ABCD1234  # (MEM[r16+imm] which is MEM [ABCD1234] = r18)
-soon to be comment: ('r18', '->', 'ABCD1234', '(', 'r16', ')')
 ('r18', '->', 'ABCD1234', '(', 'r16', ')')
-Instruction about to get decoded: B 09 08 xx 1
-soon to be comment: ('BEQ,', 'r9', ',', 'r8', ',xx,', '1')
-('BEQ,', 'r9', ',', 'r8', ',xx,', '1')
+Assigning a new physical register
 will map the following:
-None -> I12
-r9 -> I13
-r8 -> I14
-Instruction about to get decoded: B 09 05 xx 0
-soon to be comment: ('BEQ,', 'r9', ',', 'r5', ',xx,', '0')
-('BEQ,', 'r9', ',', 'r5', ',xx,', '0')
-will map the following:
-None -> I15
-r9 -> I16
-r5 -> I17
-8 3
+r16 -> I9
+r18 -> I8
 5 3
-6 3
-7 3
-B 09 08 xx 1
-B 09 05 xx 0
-I 07 08 1D    # (r29=r7 INTOP r8)
-A 02 13 15    # (r21=r2 FPADD r19)
-IF calc: {16: 'A 02 13 15    # (r21=r2 FPADD r19)', 13: 'B 09 08 xx 1', 14: 'B 09 05 xx 0', 15: 'I 07 08 1D    # (r29=r7 INTOP r8)'}
-Instruction about to get decoded: A 02 13 15    # (r21=r2 FPADD r19)
-soon to be comment: ('r21', '<-', 'r2', 'FPADD', 'r19')
-('r21', '<-', 'r2', 'FPADD', 'r19')
-will map the following:
-r21 -> I18
-r2 -> I19
-r19 -> I20
-Instruction about to get decoded: M 03 04 02    # (r2  =r3 FPMUL r4)
-soon to be comment: ('r2', '<-', 'r3', 'FPMUL', 'r4')
-('r2', '<-', 'r3', 'FPMUL', 'r4')
-will map the following:
-r2 -> I21
-r3 -> I22
-r4 -> I23
-Instruction about to get decoded: L 1f 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])
-soon to be comment: ('r18', '<-', 'ABCD1234', '(', 'r31', ')')
-('r18', '<-', 'ABCD1234', '(', 'r31', ')')
-Instruction about to get decoded: S 10 12 xx ABCD1234  # (MEM[r16+imm] which is MEM [ABCD1234] = r18)
-soon to be comment: ('r18', '->', 'ABCD1234', '(', 'r16', ')')
-('r18', '->', 'ABCD1234', '(', 'r16', ')')
-9 4
-10 4
-11 4
-12 4
-M 03 04 02    # (r2  =r3 FPMUL r4)
-L 1f 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])
-S 10 12 xx ABCD1234  # (MEM[r16+imm] which is MEM [ABCD1234] = r18)
-B 09 08 xx 1
-IF calc: {17: 'M 03 04 02    # (r2  =r3 FPMUL r4)', 18: 'L 1f 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])', 19: 'S 10 12 xx ABCD1234  # (MEM[r16+imm] which is MEM [ABCD1234] = r18)', 20: 'B 09 08 xx 1'}
-Instruction about to get decoded: A 02 13 15    # (r21=r2 FPADD r19)
-soon to be comment: ('r21', '<-', 'r2', 'FPADD', 'r19')
-('r21', '<-', 'r2', 'FPADD', 'r19')
-will map the following:
-r21 -> I24
-r2 -> I25
-r19 -> I26
-Instruction about to get decoded: B 09 08 xx 1
-soon to be comment: ('BEQ,', 'r9', ',', 'r8', ',xx,', '1')
-('BEQ,', 'r9', ',', 'r8', ',xx,', '1')
-will map the following:
-None -> I27
-r9 -> I28
-r8 -> I29
-Instruction about to get decoded: B 09 05 xx 0
-soon to be comment: ('BEQ,', 'r9', ',', 'r5', ',xx,', '0')
-('BEQ,', 'r9', ',', 'r5', ',xx,', '0')
-will map the following:
-None -> I30
-r9 -> I31
-r5 -> I32
-Instruction about to get decoded: I 07 08 1D    # (r29=r7 INTOP r8)
-soon to be comment: ('r29', '<-', 'r7', 'INTOP', 'r8')
-('r29', '<-', 'r7', 'INTOP', 'r8')
-will map the following:
-r29 -> I33
-r7 -> I34
-r8 -> I35
-will map the following:
-r29 -> I33
-r7 -> I34
-r8 -> I35
-16 5
-13 5
-14 5
-15 5
-B 09 05 xx 0
-I 07 08 1D    # (r29=r7 INTOP r8)
-A 02 13 15    # (r21=r2 FPADD r19)
-M 03 04 02    # (r2  =r3 FPMUL r4)
-IF calc: {24: 'M 03 04 02    # (r2  =r3 FPMUL r4)', 21: 'B 09 05 xx 0', 22: 'I 07 08 1D    # (r29=r7 INTOP r8)', 23: 'A 02 13 15    # (r21=r2 FPADD r19)'}
-Instruction about to get decoded: M 03 04 02    # (r2  =r3 FPMUL r4)
-soon to be comment: ('r2', '<-', 'r3', 'FPMUL', 'r4')
-('r2', '<-', 'r3', 'FPMUL', 'r4')
-will map the following:
-r2 -> I36
-r3 -> I37
-r4 -> I38
-Instruction about to get decoded: L 1f 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])
-soon to be comment: ('r18', '<-', 'ABCD1234', '(', 'r31', ')')
-('r18', '<-', 'ABCD1234', '(', 'r31', ')')
-Instruction about to get decoded: S 10 12 xx ABCD1234  # (MEM[r16+imm] which is MEM [ABCD1234] = r18)
-soon to be comment: ('r18', '->', 'ABCD1234', '(', 'r16', ')')
-('r18', '->', 'ABCD1234', '(', 'r16', ')')
-Instruction about to get decoded: B 09 08 xx 1
-soon to be comment: ('BEQ,', 'r9', ',', 'r8', ',xx,', '1')
-('BEQ,', 'r9', ',', 'r8', ',xx,', '1')
-will map the following:
-None -> I39
-r9 -> I40
-r8 -> I41
-17 6
-18 6
-19 6
-20 6
-L 1f 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])
-S 10 12 xx ABCD1234  # (MEM[r16+imm] which is MEM [ABCD1234] = r18)
-B 09 08 xx 1
-B 09 05 xx 0
-IF calc: {25: 'L 1f 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])', 26: 'S 10 12 xx ABCD1234  # (MEM[r16+imm] which is MEM [ABCD1234] = r18)', 27: 'B 09 08 xx 1', 28: 'B 09 05 xx 0'}
-Instruction about to get decoded: M 03 04 02    # (r2  =r3 FPMUL r4)
-soon to be comment: ('r2', '<-', 'r3', 'FPMUL', 'r4')
-('r2', '<-', 'r3', 'FPMUL', 'r4')
-will map the following:
-r2 -> I42
-r3 -> I43
-r4 -> I44
-Instruction about to get decoded: B 09 05 xx 0
-soon to be comment: ('BEQ,', 'r9', ',', 'r5', ',xx,', '0')
-('BEQ,', 'r9', ',', 'r5', ',xx,', '0')
-will map the following:
-None -> I45
-r9 -> I46
-r5 -> I47
-Instruction about to get decoded: I 07 08 1D    # (r29=r7 INTOP r8)
-soon to be comment: ('r29', '<-', 'r7', 'INTOP', 'r8')
-('r29', '<-', 'r7', 'INTOP', 'r8')
-will map the following:
-r29 -> I48
-r7 -> I49
-r8 -> I50
-will map the following:
-r29 -> I48
-r7 -> I49
-r8 -> I50
-Instruction about to get decoded: A 02 13 15    # (r21=r2 FPADD r19)
-soon to be comment: ('r21', '<-', 'r2', 'FPADD', 'r19')
-('r21', '<-', 'r2', 'FPADD', 'r19')
-will map the following:
-r21 -> I51
-r2 -> I52
-r19 -> I53
-24 7
-21 7
-22 7
-23 7
-IF calc: {}
-Instruction about to get decoded: L 1f 12 xx ABCD1234   # (r18 = MEM[r31+imm] which is MEM [ABCD1234])
-soon to be comment: ('r18', '<-', 'ABCD1234', '(', 'r31', ')')
-('r18', '<-', 'ABCD1234', '(', 'r31', ')')
-Instruction about to get decoded: S 10 12 xx ABCD1234  # (MEM[r16+imm] which is MEM [ABCD1234] = r18)
-soon to be comment: ('r18', '->', 'ABCD1234', '(', 'r16', ')')
-('r18', '->', 'ABCD1234', '(', 'r16', ')')
-Instruction about to get decoded: B 09 08 xx 1
-soon to be comment: ('BEQ,', 'r9', ',', 'r8', ',xx,', '1')
-('BEQ,', 'r9', ',', 'r8', ',xx,', '1')
-will map the following:
-None -> I54
-r9 -> I55
-r8 -> I56
-Instruction about to get decoded: B 09 05 xx 0
-soon to be comment: ('BEQ,', 'r9', ',', 'r5', ',xx,', '0')
-('BEQ,', 'r9', ',', 'r5', ',xx,', '0')
-will map the following:
-None -> I57
-r9 -> I58
-r5 -> I59
-25 8
-26 8
-27 8
-28 8
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}
-IF calc: {}

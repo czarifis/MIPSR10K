@@ -1,11 +1,24 @@
+'''
+Created on Dec 2, 2014
+
+@author: Costas Zarifis
+'''
+
+
 class FreeList:
 
     def __init__(self):
-        self.list = [] # List with free physical registers
-        self.busy = {} # This dict keeps whether a physical register is busy or not 
-        for i in range(64):
+        self.list = []  # List with free physical registers
+
+        # Created separate busyBitTables structure instead
+        # self.busy = {}  # This dict keeps whether a physical register is busy or not
+
+        # Physical Registers range from 1 to 64
+        for i in range(1, 65):
             self.list.append('I'+str(i))
-            self.busy['I'+str(i)] = False
+
+            # Created separate busyBitTables structure instead
+            # self.busy['I'+str(i)] = False
 
     '''
         This function assigns(returns and removes from the list) a physical register.
@@ -13,16 +26,19 @@ class FreeList:
     '''
     def assign(self,source = None):
         if source == None:
-            print 'yolo'
+            print 'Assigning a new physical register'
             try:
                 assigned = self.list[0]
                 self.list.remove(assigned)
-                self.busy[assigned] = True
+
+                # Created separate busyBitTables structure instead
+                # self.busy[assigned] = True
                 return assigned
             except:
+                # We're out of physical registers
                 return None
         else:
-            print 'non yolo'
+            print 'assignment error'
         
 
     '''
@@ -33,7 +49,7 @@ class FreeList:
         ret = []
         for i in range(4):
             assigned = self.assign()
-            if assigned == None:
+            if assigned is None:
                 # Hmm the instruction requires 4 registers
                 # but there are not 4 registers available
                 return None
@@ -53,18 +69,20 @@ class FreeList:
     '''
         This is similar to the previous one but for a single register
     '''
-    def freeReg(self,r):
+    def freeReg(self, r):
         self.list.append(r)
-        self.busy[r] = False
+
+        # Created separate busyBitTables structure instead
+        # self.busy[r] = False
 
 if __name__ == '__main__':
     l = FreeList()
     print l.list
     r = l.assign()
-    print 'assigned:',r
+    print 'assigned:', r
     print l.list
     r2 = l.assign()
-    print 'assigned:',r2
+    print 'assigned:', r2
     l.free([r])
     print l.list
     l.assign4InParallel()
