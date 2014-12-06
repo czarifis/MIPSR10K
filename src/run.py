@@ -15,6 +15,8 @@ import IF.Fetch as IF
 import ID.Decode as ID
 import II.Issue as II
 import FP.FPADD1 as FPADD1
+import FP.FPADD2 as FPADD2
+import FP.FPADD3 as FPADD3
 import argparse
 import pandas as pd 
 import numpy as np
@@ -27,14 +29,27 @@ class Main:
         self.clc = 0
         self.IFIDReg = None
         self.IDIIReg = None
+        self.FPADD1FPADD2 = None
+        self.FPADD2FPADD3 = None
         self.ActiveList = ActiveList.ActiveList()
 
-    def calc(self, df, args, IfStage, IdStage, IiStage, FPADD1Stage):
+    def calc(self, df, args, IfStage, IdStage,
+             IiStage, FPADD1Stage, FPADD2Stage,
+             FPADD3Stage):
         # print 'global calc'
         
-        instructions = IfStage.calc(df,args)
+        instructions = IfStage.calc(df, args)
         # if self.clc > 1:
         # print self.IFIDReg
+
+        # Let's put FPADD1 first... It's a timing thing...
+        FPADD1Instr = FPADD1Stage.calc(df, self.ActiveList)
+
+        FPADD2Instr = FPADD2Stage.calc(df, self.FPADD1FPADD2, self.ActiveList)
+        self.FPADD1FPADD2 = FPADD1Instr
+
+        FPADD3Stage.calc(df, self.FPADD2FPADD3, self.ActiveList)
+        self.FPADD2FPADD3 = FPADD2Instr
 
         # Passing the IF/ID register (which holds the instructions)
         # and the Active List (ROB)
@@ -46,15 +61,19 @@ class Main:
         # print '##### Instructions:',instructions,'#####'
         self.IDIIReg = instructions2
 
-        FPADD1Stage.calc(df, self.ActiveList)
 
-    def edge(self, df, dfMap, IfStage, IdStage, IiStage, FPADD1Stage):
+
+    def edge(self, df, dfMap, IfStage, IdStage,
+             IiStage, FPADD1Stage, FPADD2Stage,
+             FPADD3Stage):
         # print 'call the edge function of each stage'
         IfStage.edge(df, dfMap)
         # if self.clc > 1:
         IdStage.edge(df, dfMap, self.ActiveList)
         IiStage.edge(df, dfMap, self.ActiveList)
         FPADD1Stage.edge(df, dfMap, self.ActiveList)
+        FPADD2Stage.edge(df, dfMap, self.ActiveList)
+        FPADD3Stage.edge(df, dfMap, self.ActiveList)
 
 
 
@@ -85,6 +104,8 @@ if __name__ == '__main__':
     IdStage = ID.Decode()
     IiStage = II.Issue()
     FPADD1Stage = FPADD1.FPADD1()
+    FPADD2Stage = FPADD2.FPADD2()
+    FPADD3Stage = FPADD3.FPADD3()
     # while True:
     
     # compute number of clocks (might need to do sth better than this)
@@ -96,8 +117,8 @@ if __name__ == '__main__':
 
     for i in range(clocks):
         m.clc = i+1
-        m.calc(df, args, IfStage, IdStage, IiStage, FPADD1Stage)
-        m.edge(df, dfMap, IfStage, IdStage, IiStage, FPADD1Stage)
+        m.calc(df, args, IfStage, IdStage, IiStage, FPADD1Stage, FPADD2Stage, FPADD3Stage)
+        m.edge(df, dfMap, IfStage, IdStage, IiStage, FPADD1Stage, FPADD2Stage, FPADD3Stage)
     
     # class providing printing functionality
     pm = pr.prettifyme()

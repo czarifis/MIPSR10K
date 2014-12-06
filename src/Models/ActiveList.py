@@ -91,7 +91,7 @@ class ActiveList:
 
 
     def fp_queue_pop(self, operation):
-        self.fp_queue.pop(operation)
+        return self.fp_queue.pop(operation)
 
     # This process is used during the decoding stage to take care
     # of all the Queues :)
@@ -252,6 +252,9 @@ class ActiveList:
                 print instr.rt,'->',prt
                 self.map.setLog2Phy(instr.rt,prt)
 
+                instr.prs = prs
+                instr.prt = prt
+                instr.prd = prd
                 mappedInstr = prd,'<-',prs,'FPADD',prt
                 instr.add2MappedDecoding(mappedInstr)
 

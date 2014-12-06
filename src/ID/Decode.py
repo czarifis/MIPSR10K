@@ -54,7 +54,7 @@ class Decode:
         for instr in self.currInstrs:
             (line, actualInstr) = self.currInstrs[instr]
             print 'Instruction about to get decoded:', actualInstr
-            Inst = ins.Instruction(actualInstr)
+            Inst = ins.Instruction(line, actualInstr)
             Inst.printInstr()
             self.currDecodedInstrs[instr] = Inst
             activeList.process_decode(line, Inst)

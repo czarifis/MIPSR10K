@@ -15,6 +15,7 @@ class FPQueueRecord:
         self.I2Busy = busy_bit_t.isBusy(i2)
         self.Instruction = instr
 
+
     def to_string(self):
         ret = ''
         ret += '('+str(self.I1)+','+str(self.I1Busy)+')'
@@ -26,6 +27,14 @@ class FPQueueRecord:
             return True
         else:
             return False
+
+    # This function gets a physical register and
+    # makes it available inside the queue
+    def make_available(self, reg):
+        if self.I1 == reg:
+            self.I1Busy = False
+        if self.I2 == reg:
+            self.I2Busy = False
 
 
 class FPQueue:
@@ -51,12 +60,12 @@ class FPQueue:
                                 ' up to 16 instructions')
             else:
 
-                print 'rt:', instruction.rt, register_map.isMapped(instruction.rt)
-                print 'rs:', instruction.rs, register_map.isMapped(instruction.rs)
+                print 'rt:', instruction.rt, instruction.prt
+                print 'rs:', instruction.rs, instruction.prs
 
                 # Adding the current instruction to the Integer Queue
-                rec = FPQueueRecord(register_map.isMapped(instruction.rt),
-                                    register_map.isMapped(instruction.rs),
+                rec = FPQueueRecord(instruction.prt,
+                                    instruction.prs,
                                     busy_bit_table, instruction)
                 self.queue[tp].append(rec)
         else:
@@ -74,10 +83,22 @@ class FPQueue:
             # are any ready to go (non-busy) tuples
             for element in self.queue[op]:
                 if element.is_busy() is False:
+                    self.queue[op].remove(element)
                     return element
             return None
 
         # return None
+
+    def make_available(self, op, register):
+        if not self.queue[op]:
+            # No elements exist in the corresponding queue
+            return None
+        else:
+            # OK! Let's traverse the queue to find if there
+            # registers that should be available on the next cycle
+            for element in self.queue[op]:
+                element.make_available(register)
+
 
 
     def to_string(self):

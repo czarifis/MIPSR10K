@@ -5,12 +5,15 @@ Created on Nov 30, 2014
 '''
 class Instruction:
 
-    def __init__(self,instr):
-        self.op = None # This is the opcode of the instruction. It's one of the {L,S,I,B,A,M}
-        self.rs = None # source register 1
-        self.rt = None # source register 2
-        self.rd = None # destination register
-        self.extra = None # extra/immediate
+    def __init__(self, line, instr):
+        self.op = None  # This is the opcode of the instruction. It's one of the {L,S,I,B,A,M}
+        self.rs = None  # source register 1
+        self.rt = None  # source register 2
+        self.rd = None  # destination register
+        self.prd = None  # physical destination register assigned during first stage of execution
+        self.prt = None  # physical source register 2 assigned during first stage of execution
+        self.prs = None  # physical source register 1 assigned during first stage of execution
+        self.extra = None  # extra/immediate
         '''
             TODO: 
             If the extra field is 0, it means after execution the branch were correctly 
@@ -25,6 +28,7 @@ class Instruction:
         self.comment = '' # comment next to command after char : '#'
         self.decoding = '' # the decoded instruction is going to be added as a comment
         self.MappedDecoding = '' # The decoded instruction with the mapped physical registers
+        self.line_number = line
 
         # Create a hash for easier access and less confusion :)
         self.getVal = {
