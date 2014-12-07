@@ -61,8 +61,8 @@ class FreeList:
     '''
         This function frees (adds to the list) the registers that are contained inside the list l
     '''
-    def free(self,l):
-        assert isinstance(l,list)
+    def free(self, l):
+        assert isinstance(l, list)
         for e in l:
             self.freeReg(e)
 

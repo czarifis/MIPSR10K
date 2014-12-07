@@ -17,6 +17,7 @@ import II.Issue as II
 import FP.FPADD1 as FPADD1
 import FP.FPADD2 as FPADD2
 import FP.FPADD3 as FPADD3
+import WB.WriteBack as WB
 import argparse
 import pandas as pd 
 import numpy as np
@@ -35,12 +36,14 @@ class Main:
 
     def calc(self, df, args, IfStage, IdStage,
              IiStage, FPADD1Stage, FPADD2Stage,
-             FPADD3Stage):
+             FPADD3Stage, WBStage):
         # print 'global calc'
         
         instructions = IfStage.calc(df, args)
         # if self.clc > 1:
         # print self.IFIDReg
+
+        WBStage.calc(df, self.ActiveList)
 
         # Let's put FPADD1 first... It's a timing thing...
         FPADD1Instr = FPADD1Stage.calc(df, self.ActiveList)
@@ -50,6 +53,8 @@ class Main:
 
         FPADD3Stage.calc(df, self.FPADD2FPADD3, self.ActiveList)
         self.FPADD2FPADD3 = FPADD2Instr
+
+
 
         # Passing the IF/ID register (which holds the instructions)
         # and the Active List (ROB)
@@ -65,7 +70,7 @@ class Main:
 
     def edge(self, df, dfMap, IfStage, IdStage,
              IiStage, FPADD1Stage, FPADD2Stage,
-             FPADD3Stage):
+             FPADD3Stage, WBStage):
         # print 'call the edge function of each stage'
         IfStage.edge(df, dfMap)
         # if self.clc > 1:
@@ -74,6 +79,7 @@ class Main:
         FPADD1Stage.edge(df, dfMap, self.ActiveList)
         FPADD2Stage.edge(df, dfMap, self.ActiveList)
         FPADD3Stage.edge(df, dfMap, self.ActiveList)
+        WBStage.edge(df, dfMap, self.ActiveList)
 
 
 
@@ -106,10 +112,11 @@ if __name__ == '__main__':
     FPADD1Stage = FPADD1.FPADD1()
     FPADD2Stage = FPADD2.FPADD2()
     FPADD3Stage = FPADD3.FPADD3()
+    WBStage = WB.WriteBack()
     # while True:
     
     # compute number of clocks (might need to do sth better than this)
-    clocks = sum(1 for line in args.filename)+10
+    clocks = sum(1 for line in args.filename)+15
     print 'clocks',clocks
 
     # reset file pointer
@@ -117,8 +124,8 @@ if __name__ == '__main__':
 
     for i in range(clocks):
         m.clc = i+1
-        m.calc(df, args, IfStage, IdStage, IiStage, FPADD1Stage, FPADD2Stage, FPADD3Stage)
-        m.edge(df, dfMap, IfStage, IdStage, IiStage, FPADD1Stage, FPADD2Stage, FPADD3Stage)
+        m.calc(df, args, IfStage, IdStage, IiStage, FPADD1Stage, FPADD2Stage, FPADD3Stage, WBStage)
+        m.edge(df, dfMap, IfStage, IdStage, IiStage, FPADD1Stage, FPADD2Stage, FPADD3Stage, WBStage)
     
     # class providing printing functionality
     pm = pr.prettifyme()

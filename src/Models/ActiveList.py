@@ -18,13 +18,26 @@ class ActiveListRecord:
          * the physical register
          * a bit specifying if the current  
     '''
-    def __init__(self, logical, physical):
+    def __init__(self, logical, physical, instr):
         self.logicalDest = logical
         self.physical = physical
         self.done = True
+        self.graduated = True
+        self.instruction = instr
 
     def to_string(self):
         return str((self.logicalDest, self.physical, self.done))
+
+    def set2done(self):
+        self.done = True
+
+    # returns True if the instruction is done but not graduated
+    # False in all other cases...
+    def done_but_not_graduated(self):
+        if self.done is True and self.graduated is False:
+            return True
+        else:
+            return False
 
 
 class ActiveList:
@@ -61,19 +74,21 @@ class ActiveList:
 
         # There are 32 addresses in the ActiveList 
         for i in range(32):
-            self.ROB.append(ActiveListRecord(None, None))
+            self.ROB.append(ActiveListRecord(None, None, None))
         #     self.ROB[i] =
 
     # This func adds a tuple into the ROB
-    def add2ROB(self, line, logical, physical):
+    def add2ROB(self, line, logical, physical, inst):
         line -= 1
         instruction_record = self.ROB[line % 32]
         if instruction_record.done is False:
             # hmm apparently the instruction is still executing
             return False
         else:
-            new_record = ActiveListRecord(logical, physical)
+            new_record = ActiveListRecord(logical, physical, inst)
             new_record.done = False
+            new_record.graduated = False
+
             self.ROB[line % 32] = new_record
             return True
         # if self.curr_length < 32:
@@ -81,6 +96,24 @@ class ActiveList:
         #     self.curr_length += 1
         # else:
         #     print 'Active List is full!'
+
+    # When an instruction gets executed we have to update the corresponding done bi
+    def set_rob_record2done(self, line):
+        self.ROB[(line-1) % 32].set2done()
+
+    def pop_from_active_list(self):
+        ret_list = []
+        counter = 0
+        for e in self.ROB:
+            counter += 1
+            if e.done_but_not_graduated() is True:
+                e.graduated = True
+                ret_list.append(e.instruction)
+                if counter % 4 == 0:
+                    break
+        return ret_list
+
+
 
     # This function returns a string representation of the ROB
     def ROBToString(self):
@@ -151,7 +184,7 @@ class ActiveList:
                 self.busy_bit_tables.setAsBusy(prt)
 
                 # Adding that to ROB
-                self.add2ROB(line, instr.rt, prt)
+                self.add2ROB(line, instr.rt, prt, instr)
             # pass
         elif instr.op == 'S':
             # print instr.rt,'->',instr.extra,'(',instr.rs,')'
@@ -185,7 +218,7 @@ class ActiveList:
 
                 # There is no destination register for store words what do I do as far as ROB goes?
                 # Oh Well let's insert it for now
-                self.add2ROB(line, instr.rt, prt)
+                self.add2ROB(line, instr.rt, prt, instr)
         elif instr.op == 'I':
             # print instr.rd,'<-',instr.rs,'INTOP',instr.rt
 
@@ -222,7 +255,7 @@ class ActiveList:
                 # # Adding instruction to integer queue
                 # self.integer_queue.add2queue('ALU2', self.busy_bit_tables, self.map, instr)
                 # Adding that to ROB
-                self.add2ROB(line, instr.rd, prd)
+                self.add2ROB(line, instr.rd, prd, instr)
 
         elif instr.op == 'A':
             # print instr.rd,'<-',instr.rs,'FPADD',instr.rt
@@ -265,7 +298,7 @@ class ActiveList:
                 # self.fp_queue.add2queue('FPADD', self.busy_bit_tables, self.map, instr)
 
                 # Adding that to ROB
-                self.add2ROB(line, instr.rd, prd)
+                self.add2ROB(line, instr.rd, prd, instr)
 
             # pass
         elif instr.op == 'M':
@@ -306,7 +339,7 @@ class ActiveList:
                 # self.fp_queue.add2queue('FPMUL', self.busy_bit_tables, self.map, instr)
 
                 # Adding that to ROB
-                self.add2ROB(line, instr.rd, prd)
+                self.add2ROB(line, instr.rd, prd, instr)
             # pass
         elif instr.op == 'B':
             # print 'BEQ,',instr.rs,',',instr.rt,',xx,',instr.prediction
