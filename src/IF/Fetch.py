@@ -16,7 +16,7 @@ class Fetch:
         self.clc = 0
 
     # Fetching 4 lines per click
-    def fetch4linesPerClck(self,df,args):
+    def fetch_n_linesPerClck(self, df, args):
         self.currInstrs = {}
         for line in args.filename:
             currLineStr = line.strip() 
@@ -26,7 +26,7 @@ class Fetch:
             print 'current line:', self.i
             self.currInstrs[self.i] = (self.i, currLineStr)
             # print 'line',line
-            if self.i % 4 == 0:
+            if self.i % args.issue == 0:
                 return self.currInstrs
         # These are the last lines which have not been returned so far
         return self.currInstrs
@@ -34,7 +34,7 @@ class Fetch:
 
     def calc(self, df, args):
         # print 'Fetch calc'
-        ret = self.fetch4linesPerClck(df, args)
+        ret = self.fetch_n_linesPerClck(df, args)
         # print 'IF calc:',ret
         return ret
 
@@ -52,7 +52,7 @@ class Fetch:
             dfMap.loc[5] = ['Integer Queue:'] + a
             dfMap.loc[6] = ['FP Queue:'] + a
         
-        for k in self.currInstrs.keys():
+        for k in sorted(self.currInstrs.keys()):
             df.loc[k] = [self.currInstrs[k], '', ''] + a
             df.xs(k)[str(self.clc)] = 'IF'
             # print 'registered an IF stage on location:', k, self.clc

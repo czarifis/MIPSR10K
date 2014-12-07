@@ -6,6 +6,8 @@ Created on Dec 5, 2014
 
 from collections import defaultdict
 
+# Class that describes a record inside the FP queue
+
 
 class FPQueueRecord:
     def __init__(self, i1, i2, busy_bit_t, instr):
@@ -15,13 +17,14 @@ class FPQueueRecord:
         self.I2Busy = busy_bit_t.isBusy(i2)
         self.Instruction = instr
 
-
+    # to_string method used to "pretty print" the output into a matrix
     def to_string(self):
         ret = ''
-        ret += '('+str(self.I1)+','+str(self.I1Busy)+')'
-        ret += '('+str(self.I2)+','+str(self.I2Busy)+')'
+        ret += '{('+str(self.I1)+','+str(self.I1Busy)+')'
+        ret += '('+str(self.I2)+','+str(self.I2Busy)+')}'
         return ret
 
+    # checks if the current record is busy
     def is_busy(self):
         if self.I1Busy or self.I2Busy:
             return True
@@ -35,6 +38,9 @@ class FPQueueRecord:
             self.I1Busy = False
         if self.I2 == reg:
             self.I2Busy = False
+
+
+# Class describing the FPQueue
 
 
 class FPQueue:
@@ -53,7 +59,7 @@ class FPQueue:
             self.current_size += 1
 
             # Checking if there's enough space in the queue for a new instruction
-            if self.current_size == self.MAX_SIZE:
+            if self.current_size > self.MAX_SIZE:
                 self.current_size -= 1
                 # I guess an exception is fine for now...
                 raise Exception('FP Queue can only hold'
@@ -71,9 +77,9 @@ class FPQueue:
         else:
             raise Exception('FP Queue can only hold'
                             ' instructions that intend to '
-                            'go to either ALU1 or ALU2')
+                            'go to either FPADD or FPMUL')
 
-    # This instruction returns a none busy record from the queue
+    # This instruction returns a non-busy record from the queue
     def pop(self, op):
         if not self.queue[op]:
             # No elements exist in the corresponding queue
@@ -84,10 +90,15 @@ class FPQueue:
             for element in self.queue[op]:
                 if element.is_busy() is False:
                     self.queue[op].remove(element)
+                    self.current_size -= 1
                     return element
             return None
 
         # return None
+
+    # This function switches a busy element of a queue into a non-busy one
+    # Used mainly to forward values that have finished executing but are not
+    # graduated yet
 
     def make_available(self, op, register):
         if not self.queue[op]:
@@ -99,8 +110,7 @@ class FPQueue:
             for element in self.queue[op]:
                 element.make_available(register)
 
-
-
+    # function used for "pretty printing"
     def to_string(self):
         if self.current_size == 0:
             return 'empty!'

@@ -5,10 +5,11 @@ Created on Dec 5, 2014
 '''
 
 
-class FPADD1:
+class INTOP:
     def __init__(self):
         self.clc = 0
         self.curr_instr = None
+        self.prev_dest = None
 
     def calc(self, df, active_list):
         self.curr_instr = None
@@ -22,27 +23,30 @@ class FPADD1:
             ins.rs = record.I2
 
             self.curr_instr = ins
+
+            active_list.integer_queue.make_available('ALU2', ins.prd)
+            self.prev_dest = ins.prd
+            active_list.set_rob_record2done(ins.line_number)
             # pass
+        else:
+            if self.prev_dest is not None:
+                active_list.integer_queue.make_available('ALU2', self.prev_dest)
         return self.curr_instr
 
-
-
     def access_queue(self, active_list):
-        list_tuple = active_list.fp_queue_pop('FPADD')
+        list_tuple = active_list.int_queue_pop('ALU2')
         if list_tuple is None:
-            print 'Cannot de-queue from FPADD list'
+            print 'Cannot de-queue from ALU2 list'
         else:
-            print 'dequeueing from FPADD'
+            print 'dequeueing from ALU2'
             return list_tuple
 
-
         return None
-
 
     def edge(self, df, dfMap, active_list):
         self.clc += 1
         if self.curr_instr is not None:
-            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FPADD1'
+            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'INTOP'
 
 
             # empty the "queue"

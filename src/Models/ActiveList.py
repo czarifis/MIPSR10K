@@ -26,7 +26,10 @@ class ActiveListRecord:
         self.instruction = instr
 
     def to_string(self):
-        return str((self.logicalDest, self.physical, self.done))
+        if self.instruction is None:
+            return 'None'
+        else:
+            return str((self.logicalDest, self.physical, self.done, self.graduated, self.instruction.line_number))
 
     def set2done(self):
         self.done = True
@@ -83,6 +86,7 @@ class ActiveList:
         instruction_record = self.ROB[line % 32]
         if instruction_record.done is False:
             # hmm apparently the instruction is still executing
+            raise 'ROB is full!'
             return False
         else:
             new_record = ActiveListRecord(logical, physical, inst)
@@ -104,13 +108,25 @@ class ActiveList:
     def pop_from_active_list(self):
         ret_list = []
         counter = 0
+        prev_element = None
         for e in self.ROB:
             counter += 1
             if e.done_but_not_graduated() is True:
-                e.graduated = True
-                ret_list.append(e.instruction)
-                if counter % 4 == 0:
+                if prev_element is None:
+                    prev_element2 = self.ROB[len(self.ROB)-1]
+                    if prev_element2.graduated:
+                        e.graduated = True
+                        ret_list.append(e.instruction)
+                        if counter % 4 == 0:
+                            break
+                elif prev_element.graduated:
+                    e.graduated = True
+                    ret_list.append(e.instruction)
+                    if counter % 4 == 0:
+                        break
+                else:
                     break
+            prev_element = e
         return ret_list
 
 
@@ -126,6 +142,9 @@ class ActiveList:
     def fp_queue_pop(self, operation):
         return self.fp_queue.pop(operation)
 
+    def int_queue_pop(self, operation):
+        return self.integer_queue.pop(operation)
+
     # This process is used during the decoding stage to take care
     # of all the Queues :)
     def process_issue(self, instr):
@@ -139,7 +158,10 @@ class ActiveList:
 
         elif instr.op == 'A':
             # Adding instruction to fp queue
+
             self.fp_queue.add2queue('FPADD', self.busy_bit_tables, self.map, instr)
+
+
 
         elif instr.op == 'M':
             # Adding instruction to fp queue
@@ -240,12 +262,17 @@ class ActiveList:
                 self.map.setNote('We are out of Physical Registers')
             else:
                 print 'will map the following:'
-                print instr.rd,'->',prd
-                self.map.setLog2Phy(instr.rd,prd)
                 print instr.rs,'->',prs
                 self.map.setLog2Phy(instr.rs,prs)
                 print instr.rt,'->',prt
                 self.map.setLog2Phy(instr.rt,prt)
+                print instr.rd,'->',prd
+                self.map.setLog2Phy(instr.rd,prd)
+
+
+                instr.prs = prs
+                instr.prt = prt
+                instr.prd = prd
                 mappedInstr = prd,'<-',prs,'INTOP',prt
                 instr.add2MappedDecoding(mappedInstr)
 
@@ -278,12 +305,13 @@ class ActiveList:
                 self.map.setNote('We are out of Physical Registers')
             else:
                 print 'will map the following:'
-                print instr.rd,'->',prd
-                self.map.setLog2Phy(instr.rd,prd)
                 print instr.rs,'->',prs
                 self.map.setLog2Phy(instr.rs,prs)
                 print instr.rt,'->',prt
                 self.map.setLog2Phy(instr.rt,prt)
+                print instr.rd,'->',prd
+                self.map.setLog2Phy(instr.rd,prd)
+
 
                 instr.prs = prs
                 instr.prt = prt
@@ -322,12 +350,12 @@ class ActiveList:
                 self.map.setNote('We are out of Physical Registers')
             else:
                 print 'will map the following:'
-                print instr.rd,'->',prd
-                self.map.setLog2Phy(instr.rd,prd)
                 print instr.rs,'->',prs
                 self.map.setLog2Phy(instr.rs,prs)
                 print instr.rt,'->',prt
                 self.map.setLog2Phy(instr.rt,prt)
+                print instr.rd,'->',prd
+                self.map.setLog2Phy(instr.rd,prd)
 
                 mappedInstr = prd,'<-',prs,'FPMUL',prt
                 instr.add2MappedDecoding(mappedInstr)

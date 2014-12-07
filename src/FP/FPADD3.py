@@ -16,7 +16,7 @@ class FPADD3:
         if pipeline_register is not None:
             active_list.fp_queue.make_available('FPADD', pipeline_register.prd)
             active_list.set_rob_record2done(pipeline_register.line_number)
-            pass
+
         return self.curr_instr
 
 

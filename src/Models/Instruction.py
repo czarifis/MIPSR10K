@@ -103,7 +103,7 @@ class Instruction:
         # print 'soon to be comment:', str(self.comment)+str(comment)
         self.comment = str(self.comment)+str(comment)
 
-    def add2MappedDecoding(self,mappedDec):
+    def add2MappedDecoding(self, mappedDec):
         # print 'soon to be mapped:',mappedDec
         self.MappedDecoding = str(mappedDec)[1:-1].replace("'","").replace(",","")
 

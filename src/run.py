@@ -18,6 +18,7 @@ import FP.FPADD1 as FPADD1
 import FP.FPADD2 as FPADD2
 import FP.FPADD3 as FPADD3
 import WB.WriteBack as WB
+import Integer.INTOP as INTOP
 import argparse
 import pandas as pd 
 import numpy as np
@@ -36,7 +37,7 @@ class Main:
 
     def calc(self, df, args, IfStage, IdStage,
              IiStage, FPADD1Stage, FPADD2Stage,
-             FPADD3Stage, WBStage):
+             FPADD3Stage, WBStage, INTOPStage):
         # print 'global calc'
         
         instructions = IfStage.calc(df, args)
@@ -54,15 +55,21 @@ class Main:
         FPADD3Stage.calc(df, self.FPADD2FPADD3, self.ActiveList)
         self.FPADD2FPADD3 = FPADD2Instr
 
+        INTOPStage.calc(df, self.ActiveList)
+
 
 
         # Passing the IF/ID register (which holds the instructions)
         # and the Active List (ROB)
         instructions2 = IdStage.calc(df, self.IFIDReg, self.ActiveList)
         self.IFIDReg = instructions
+
+
         # Passing the ID/II register (which holds the instructions)
         # and the Active List (ROB)
-        IiStage.calc(df, self.IDIIReg, self.ActiveList)
+        # Also passing the args as it keeps information about the number
+        # of instructions that can be issued per cycle
+        IiStage.calc(df, self.IDIIReg, self.ActiveList, args)
         # print '##### Instructions:',instructions,'#####'
         self.IDIIReg = instructions2
 
@@ -70,7 +77,7 @@ class Main:
 
     def edge(self, df, dfMap, IfStage, IdStage,
              IiStage, FPADD1Stage, FPADD2Stage,
-             FPADD3Stage, WBStage):
+             FPADD3Stage, WBStage, INTOPStage):
         # print 'call the edge function of each stage'
         IfStage.edge(df, dfMap)
         # if self.clc > 1:
@@ -79,6 +86,7 @@ class Main:
         FPADD1Stage.edge(df, dfMap, self.ActiveList)
         FPADD2Stage.edge(df, dfMap, self.ActiveList)
         FPADD3Stage.edge(df, dfMap, self.ActiveList)
+        INTOPStage.edge(df, dfMap, self.ActiveList)
         WBStage.edge(df, dfMap, self.ActiveList)
 
 
@@ -90,6 +98,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-in', dest="filename", type=argparse.FileType('r'), help='input file path', required=False)
     parser.add_argument('-out', dest="output", type=str, help='output file path', required=False)
+    parser.add_argument('-issue', dest="issue", type=int, help='total number of instructions that can get '
+                                                               'issued (default is 1)', required=False)
     args = parser.parse_args()
 
     # Checking if input argument is given
@@ -100,6 +110,10 @@ if __name__ == '__main__':
     # Checking if output argument is given
     if args.output is None:
         args.output = 'output'
+
+    # Checking if issue argument is given
+    if args.issue is None:
+        args.issue = 1
     
     df = pd.DataFrame(columns=('Instruction', 'Logical', 'Physical', '1'))
     dfMap = pd.DataFrame(columns=('Clock Counter', '1'))
@@ -112,20 +126,26 @@ if __name__ == '__main__':
     FPADD1Stage = FPADD1.FPADD1()
     FPADD2Stage = FPADD2.FPADD2()
     FPADD3Stage = FPADD3.FPADD3()
+
+    INTOPStage = INTOP.INTOP()
     WBStage = WB.WriteBack()
     # while True:
     
     # compute number of clocks (might need to do sth better than this)
-    clocks = sum(1 for line in args.filename)+15
-    print 'clocks',clocks
+    clocks = sum(1 for line in args.filename)+40
+    print 'clocks', clocks
 
     # reset file pointer
     args.filename.seek(0)
 
     for i in range(clocks):
         m.clc = i+1
-        m.calc(df, args, IfStage, IdStage, IiStage, FPADD1Stage, FPADD2Stage, FPADD3Stage, WBStage)
-        m.edge(df, dfMap, IfStage, IdStage, IiStage, FPADD1Stage, FPADD2Stage, FPADD3Stage, WBStage)
+        m.calc(df, args, IfStage, IdStage, IiStage,
+               FPADD1Stage, FPADD2Stage, FPADD3Stage,
+               WBStage, INTOPStage)
+        m.edge(df, dfMap, IfStage, IdStage, IiStage,
+               FPADD1Stage, FPADD2Stage, FPADD3Stage,
+               WBStage, INTOPStage)
     
     # class providing printing functionality
     pm = pr.prettifyme()
