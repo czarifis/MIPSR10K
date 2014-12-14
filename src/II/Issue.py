@@ -13,29 +13,40 @@ This class provides all the functionality for Issuing instructions
 class Issue:
     def __init__(self):
         self.currInstrs = {}
-        self.currIssuedInstrs = {}
+        self.currIssuedInstrs = []
         self.issue_times = 0
         self.clc = 0
 
-    def calc(self, df, instructions, activeList, args):
+    def calc(self, df, pipeline_register, active_list, args):
 
-        self.issue_times = args.issue
-        self.currIssuedInstrs = {}
-        if instructions is not None:
-            # print instructions
-            # Inst = ins.Instruction()
+        if pipeline_register == 0:
+            self.issue_times = args.issue
+            self.currIssuedInstrs = []
+            about2go2execution_units = self.access_queue2get_one_instr_for_each_exe_unit(active_list)
+            for k in about2go2execution_units:
+                self.currIssuedInstrs.append(about2go2execution_units[k].Instruction)
+
+            instrz = active_list.go_over_queues()
+            self.currIssuedInstrs = self.currIssuedInstrs + instrz
+            return about2go2execution_units
 
 
-            self.currInstrs = dict(self.currInstrs.items()+instructions.items())
+        # if instructions is not None:
+        #     # print instructions
+        #     # Inst = ins.Instruction()
+        #
+        #
+        #     self.currInstrs = dict(self.currInstrs.items()+instructions.items())
+        #
+        #     d4 = dict(self.currInstrs)
+        #     d4.update(instructions)
+        #     self.currInstrs = d4
+        #
+        #     self.iterOverInstructions(activeList, args)
+        #
+        #     return 0
+        # return -1
 
-            d4 = dict(self.currInstrs)
-            d4.update(instructions)
-            self.currInstrs = d4
-
-            self.iterOverInstructions(activeList, args)
-
-            return 0
-        return -1
 
     # This function iterates over n instructions at each cycle
     def iterOverInstructions(self, activeList, args):
@@ -116,7 +127,7 @@ class Issue:
             d['ALU1'] = list_tuple
             # return list_tuple
 
-        list_tuple = active_list.fp_queue_pop('ALU2')
+        list_tuple = active_list.int_queue_pop('ALU2')
         if list_tuple is None:
             print 'Cannot de-queue from ALU2 list'
             # Let's try to de-queue from the FPADD list
@@ -124,7 +135,7 @@ class Issue:
             if list_tuple is None:
                 print 'Cannot de-queue from ALU1 list'
             else:
-                print 'dequeueing from FPADD'
+                print 'dequeueing from ALU1'
                 d['ALU2'] = list_tuple
                 # return list_tuple
 
@@ -144,9 +155,10 @@ class Issue:
         # dfMap.xs(4)[self.clc] = activeList.map.Note
         # dfMap.xs(5)[self.clc] = activeList.integer_queue.to_string()
         # dfMap.xs(6)[self.clc] = activeList.fp_queue.to_string()
+
         if self.currIssuedInstrs:
-            for k in sorted(self.currIssuedInstrs.keys()):
-                df.xs(k)[str(self.clc)] = 'II'
+            for k in self.currIssuedInstrs:
+                df.xs(k.line_number)[str(self.clc)] = 'II'
 
 
                 # print 'registered an ID stage on location:', k, self.clc

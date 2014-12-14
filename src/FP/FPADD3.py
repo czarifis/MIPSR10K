@@ -26,7 +26,7 @@ class FPADD3:
     def edge(self, df, dfMap, active_list):
         self.clc += 1
         if self.curr_instr is not None:
-            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FPADD3'
+            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FP1'
 
 
             # empty the "queue"

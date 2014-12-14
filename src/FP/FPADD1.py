@@ -10,10 +10,14 @@ class FPADD1:
         self.clc = 0
         self.curr_instr = None
 
-    def calc(self, df, active_list, after_issue):
+    def calc(self, df, active_list, reg):
         # if after_issue == 0:
         self.curr_instr = None
-        record = self.access_queue(active_list)
+        # record = self.access_queue(active_list)
+        if 'FP1' in reg.keys():
+            record = reg['FP1']
+        else:
+            record = None
         if record is not None:
             ins = record.Instruction
             # ins.prd = active_list.map.isMapped(ins.rd)
@@ -23,6 +27,8 @@ class FPADD1:
             ins.rs = record.I2
 
             self.curr_instr = ins
+
+
             # pass
         return self.curr_instr
 
@@ -44,7 +50,7 @@ class FPADD1:
         self.clc += 1
         if self.curr_instr is not None:
             # pass
-            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FPADD1'
+            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FP1'
 
 
             # empty the "queue"

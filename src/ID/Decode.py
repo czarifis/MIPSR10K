@@ -50,9 +50,10 @@ class Decode:
             self.currInstrs = d4
 
             self.iterOverInstructions(activeList)
-            return self.currDecodedInstrs
+            # return self.currDecodedInstrs
+            return 0
         else:
-            return None
+            return -1
         
     # This function iterates over 4 instructions at each cycle
     def iterOverInstructions(self,activeList):
@@ -74,7 +75,7 @@ class Decode:
                 self.currDecodedInstrs[instr] = Inst
                 self.currIssuedInstrs[instr] = self.currInstrs[instr]
                 about_to_be_deleted.append(line)
-                # activeList.process_add2queue(Inst)
+                activeList.process_add2queue(Inst)
                 it += 1
                 if it == 4:
                     break

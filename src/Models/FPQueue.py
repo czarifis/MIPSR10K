@@ -130,4 +130,14 @@ class FPQueue:
 
         return ret
 
+    # This function returns every instruction that is still inside the integer queue
+    def return_instructions(self):
+        ret = []
+        alu1_list = self.queue['FPADD']
+        for e in alu1_list:
+            ret.append(e.Instruction)
+        alu2_list = self.queue['FPMUL']
+        for e in alu2_list:
+            ret.append(e.Instruction)
+        return ret
 

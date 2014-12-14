@@ -1,21 +1,22 @@
 '''
-Created on Dec 7, 2014
+Created on Dec 5, 2014
 
 @author: Costas Zarifis
 '''
 
 
-class FPMUL1:
+class ALU1:
     def __init__(self):
         self.clc = 0
         self.curr_instr = None
+        self.prev_dest = None
 
     def calc(self, df, active_list, reg):
         # if after_issue == 0:
         self.curr_instr = None
         # record = self.access_queue(active_list)
-        if 'FP2' in reg.keys():
-            record = reg['FP2']
+        if 'ALU1' in reg.keys():
+            record = reg['ALU1']
         else:
             record = None
         if record is not None:
@@ -27,28 +28,33 @@ class FPMUL1:
             ins.rs = record.I2
 
             self.curr_instr = ins
+
+            active_list.integer_queue.make_available('ALU2', ins.prd)
+            active_list.integer_queue.make_available('ALU1', ins.prd)
+            active_list.fp_queue.make_available('FPADD', ins.prd)
+            active_list.fp_queue.make_available('FPMUL', ins.prd)
+            self.prev_dest = ins.prd
+            active_list.set_rob_record2done(ins.line_number)
             # pass
+        else:
+            if self.prev_dest is not None:
+                active_list.integer_queue.make_available('ALU2', self.prev_dest)
         return self.curr_instr
 
-
-
     def access_queue(self, active_list):
-        list_tuple = active_list.fp_queue_pop('FPMUL')
+        list_tuple = active_list.int_queue_pop('ALU2')
         if list_tuple is None:
-            print 'Cannot de-queue from FPMUL list'
+            print 'Cannot de-queue from ALU2 list'
         else:
-            print 'dequeueing from FPMUL'
+            print 'dequeueing from ALU2'
             return list_tuple
 
-
         return None
-
 
     def edge(self, df, dfMap, active_list):
         self.clc += 1
         if self.curr_instr is not None:
-            # pass
-            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FP2'
+            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'ALU1'
 
 
             # empty the "queue"

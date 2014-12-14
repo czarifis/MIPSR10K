@@ -100,6 +100,17 @@ class IntegerQueue:
                     return element
             return None
 
+    # This function returns every instruction that is still inside the integer queue
+    def return_instructions(self):
+        ret = []
+        alu1_list = self.queue['ALU1']
+        for e in alu1_list:
+            ret.append(e.Instruction)
+        alu2_list = self.queue['ALU2']
+        for e in alu2_list:
+            ret.append(e.Instruction)
+        return ret
+
     # This function switches a busy element of a queue into a non-busy one
     # Used mainly to forward values that have finished executing but are not
     # graduated yet

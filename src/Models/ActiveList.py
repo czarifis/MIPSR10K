@@ -216,6 +216,14 @@ class ActiveList:
             self.integer_queue.add2queue('ALU1', self.busy_bit_tables, self.map, instr)
 
 
+    # This function is used by the Issue stage to go over all the instructions that
+    # Are still in the queues
+    def go_over_queues(self):
+        ret = []
+        ret = ret + self.integer_queue.return_instructions()
+        ret = ret + self.fp_queue.return_instructions()
+        return ret
+
     # This process is used during the decoding stage to take care
     # Free Lists, busy bit tables, register map tables, instruction
     # object generation and pretty much everything other than the
