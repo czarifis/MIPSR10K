@@ -10,7 +10,8 @@ class FPADD1:
         self.clc = 0
         self.curr_instr = None
 
-    def calc(self, df, active_list):
+    def calc(self, df, active_list, after_issue):
+        # if after_issue == 0:
         self.curr_instr = None
         record = self.access_queue(active_list)
         if record is not None:
@@ -42,6 +43,7 @@ class FPADD1:
     def edge(self, df, dfMap, active_list):
         self.clc += 1
         if self.curr_instr is not None:
+            # pass
             df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FPADD1'
 
 

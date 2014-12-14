@@ -11,10 +11,17 @@ from collections import defaultdict
 
 class FPQueueRecord:
     def __init__(self, i1, i2, busy_bit_t, instr):
+
         self.I1 = i1
-        self.I1Busy = busy_bit_t.isBusy(i1)
+        if i1 == 'I0':
+            self.I1Busy = False
+        else:
+            self.I1Busy = busy_bit_t.isBusy(i1)
         self.I2 = i2
-        self.I2Busy = busy_bit_t.isBusy(i2)
+        if i2 == 'I0':
+            self.I2Busy = False
+        else:
+            self.I2Busy = busy_bit_t.isBusy(i2)
         self.Instruction = instr
 
     # to_string method used to "pretty print" the output into a matrix

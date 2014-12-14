@@ -18,6 +18,7 @@ class Issue:
         self.clc = 0
 
     def calc(self, df, instructions, activeList, args):
+
         self.issue_times = args.issue
         self.currIssuedInstrs = {}
         if instructions is not None:
@@ -33,19 +34,19 @@ class Issue:
 
             self.iterOverInstructions(activeList, args)
 
+            return 0
+        return -1
 
-
-
-    # This function iterates over 4 instructions at each cycle
+    # This function iterates over n instructions at each cycle
     def iterOverInstructions(self, activeList, args):
         it = 0
         about_to_be_deleted = []
         for instr in sorted(self.currInstrs):
             actualInstr = self.currInstrs[instr]
 
-
             try:
-                activeList.process_issue(actualInstr)
+                # activeList.process_issue(actualInstr)
+                activeList.process_add2queue(actualInstr)
                 self.currIssuedInstrs[instr] = actualInstr
                 about_to_be_deleted.append(instr)
 
@@ -58,7 +59,81 @@ class Issue:
         for ii in about_to_be_deleted:
             del self.currInstrs[ii]
 
+    # This function tries to access the corresponding queues so that it returns
+    # one instruction for each execution unit
+    def access_queue2get_one_instr_for_each_exe_unit(self, active_list):
+        d = {}
+        list_tuple = active_list.fp_queue_pop('FPMUL')
+        if list_tuple is None:
+            print 'Cannot de-queue from FPMUL list'
+            # Let's try to de-queue from the FPADD list
+            list_tuple = active_list.fp_queue_pop('FPADD')
+            if list_tuple is None:
+                print 'Cannot de-queue from FPADD list'
+            else:
+                print 'dequeueing from FPMUL'
+                d['FP1'] = list_tuple
+                # return list_tuple
 
+        else:
+            print 'dequeueing from FPMUL'
+            d['FP1'] = list_tuple
+            # return list_tuple
+
+        list_tuple = active_list.fp_queue_pop('FPADD')
+        if list_tuple is None:
+            print 'Cannot de-queue from FPADD list'
+            # Let's try to de-queue from the FPADD list
+            list_tuple = active_list.fp_queue_pop('FPMUL')
+            if list_tuple is None:
+                print 'Cannot de-queue from FPMUL list'
+            else:
+                print 'dequeueing from FPADD'
+                d['FP2'] = list_tuple
+                # return list_tuple
+
+        else:
+            print 'dequeueing from FPADD'
+            d['FP2'] = list_tuple
+            # return list_tuple
+
+        ######
+
+        list_tuple = active_list.int_queue_pop('ALU1')
+        if list_tuple is None:
+            print 'Cannot de-queue from ALU2 list'
+            # Let's try to de-queue from the FPADD list
+            list_tuple = active_list.int_queue_pop('ALU2')
+            if list_tuple is None:
+                print 'Cannot de-queue from ALU2 list'
+            else:
+                print 'dequeueing from ALU2'
+                d['ALU1'] = list_tuple
+                # return list_tuple
+
+        else:
+            print 'dequeueing from ALU1'
+            d['ALU1'] = list_tuple
+            # return list_tuple
+
+        list_tuple = active_list.fp_queue_pop('ALU2')
+        if list_tuple is None:
+            print 'Cannot de-queue from ALU2 list'
+            # Let's try to de-queue from the FPADD list
+            list_tuple = active_list.fp_queue_pop('ALU1')
+            if list_tuple is None:
+                print 'Cannot de-queue from ALU1 list'
+            else:
+                print 'dequeueing from FPADD'
+                d['ALU2'] = list_tuple
+                # return list_tuple
+
+        else:
+            print 'dequeueing from ALU2'
+            d['ALU2'] = list_tuple
+            # return list_tuple
+
+        return d
 
     def edge(self, df, dfMap, activeList):
         self.clc += 1

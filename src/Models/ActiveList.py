@@ -24,6 +24,7 @@ class ActiveListRecord:
         self.done = True
         self.graduated = True
         self.instruction = instr
+        self.inst_graduated = None
 
     def to_string(self):
         if self.instruction is None:
@@ -54,6 +55,8 @@ class ActiveList:
     '''
     def __init__(self):
         self.ROB = []
+        self.inst_graduated_previously = None
+        self.line_graduated_previously = -1
         # self.ROB = {}
         self.curr_length = 0
 
@@ -83,8 +86,9 @@ class ActiveList:
     # This func adds a tuple into the ROB
     def add2ROB(self, line, logical, physical, inst):
         line -= 1
+
         instruction_record = self.ROB[line % 32]
-        if instruction_record.done is False:
+        if instruction_record.graduated is False:
             # hmm apparently the instruction is still executing
             raise 'ROB is full!'
             return False
@@ -108,25 +112,65 @@ class ActiveList:
     def pop_from_active_list(self):
         ret_list = []
         counter = 0
+        rem_counter = 0
         prev_element = None
+
+        # if self.inst_graduated_previously is None:
+        #     for e in self.ROB:
+        #         if e.done_but_not_graduated() is True:
+        #
+
+
         for e in self.ROB:
-            counter += 1
+
             if e.done_but_not_graduated() is True:
-                if prev_element is None:
-                    prev_element2 = self.ROB[len(self.ROB)-1]
-                    if prev_element2.graduated:
-                        e.graduated = True
-                        ret_list.append(e.instruction)
-                        if counter % 4 == 0:
-                            break
-                elif prev_element.graduated:
+                if self.inst_graduated_previously is None:
                     e.graduated = True
                     ret_list.append(e.instruction)
+                    self.inst_graduated_previously = e.instruction
+                    self.line_graduated_previously = rem_counter
+                    counter += 1
                     if counter % 4 == 0:
                         break
                 else:
-                    break
-            prev_element = e
+                    ll1 = self.line_graduated_previously + 1
+                    ll = ll1 % 32
+                    if ll == rem_counter:
+                        e.graduated = True
+                        ret_list.append(e.instruction)
+                        self.inst_graduated_previously = e.instruction
+                        self.line_graduated_previously = rem_counter
+                        counter += 1
+                        if counter % 4 == 0:
+                            break
+                        pass
+            rem_counter += 1
+                # else:
+
+
+        # for e in self.ROB:
+        #
+        #     if e.done_but_not_graduated() is True:
+        #
+        #         if prev_element is None:
+        #             prev_element2 = self.ROB[len(self.ROB)-1]
+        #             if prev_element2.graduated:
+        #                 e.graduated = True
+        #                 ret_list.append(e.instruction)
+        #                 self.inst_graduated_previously = e.instruction
+        #                 counter += 1
+        #                 if counter % 4 == 0:
+        #                     break
+        #         elif prev_element.graduated:
+        #             e.graduated = True
+        #             ret_list.append(e.instruction)
+        #             self.inst_graduated_previously = e.instruction
+        #             counter += 1
+        #             if counter % 4 == 0:
+        #                 break
+        #         else:
+        #             break
+        #     prev_element = e
         return ret_list
 
 
@@ -147,7 +191,7 @@ class ActiveList:
 
     # This process is used during the decoding stage to take care
     # of all the Queues :)
-    def process_issue(self, instr):
+    def process_add2queue(self, instr):
         if instr.op == 'L':
             pass
         elif instr.op == 'S':
@@ -181,14 +225,24 @@ class ActiveList:
         if instr.op == 'L':
             # print instr.rt,'<-',instr.extra,'(',instr.rs,')'
 
-            # If this happens there's a hazard RAW or RAR
-            prs = self.map.isMapped(instr.rs)
-            if prs is None:
-                prs = self.freeList.assign()
+            # r0 is always I0
+            if instr.rs == 'r0':
+                prs = 'I0'
+            else:
+                # If this happens there's a hazard RAW or RAR
+                prs = self.map.isMapped(instr.rs)
+                if prs is None:
+                    prs = self.freeList.assign()
+            self.map.setLog2Phy(instr.rs,prs)
 
             # prs = self.freeList.assign()
             # This is the destination
-            prt = self.freeList.assign()
+
+            if instr.rt is 'r0':
+                prt = 'I0'
+            else:
+                prt = self.freeList.assign()
+            self.map.setLog2Phy(instr.rt,prt)
             if prs is None or prt is None:
                 self.map.setNote('We are out of Physical Registers')
 
@@ -212,13 +266,21 @@ class ActiveList:
             # print instr.rt,'->',instr.extra,'(',instr.rs,')'
             # prd = self.
             # If this happens there's a hazard RAW or RAR
-            prs = self.map.isMapped(instr.rs)
-            if prs == None:
-                prs = self.freeList.assign()
-            
-            prt = self.map.isMapped(instr.rt)
-            if prt == None:
-                prt = self.freeList.assign()
+            if instr.rs == 'r0':
+                prs = 'I0'
+            else:
+                prs = self.map.isMapped(instr.rs)
+                if prs == None:
+                    prs = self.freeList.assign()
+            self.map.setLog2Phy(instr.rs,prs)
+
+            if instr.rt == 'r0':
+                prt = 'I0'
+            else:
+                prt = self.map.isMapped(instr.rt)
+                if prt == None:
+                    prt = self.freeList.assign()
+            self.map.setLog2Phy(instr.rt,prt)
             
             # prs = self.freeList.assign()
             # prt = self.freeList.assign()
@@ -244,17 +306,27 @@ class ActiveList:
         elif instr.op == 'I':
             # print instr.rd,'<-',instr.rs,'INTOP',instr.rt
 
-            prs = self.map.isMapped(instr.rs)
-            if prs is None:
-                prs = self.freeList.assign()
-            
-            prt = self.map.isMapped(instr.rt)
-            if prt is None:
-                prt = self.freeList.assign()
-            
+            if instr.rs == 'r0':
+                prs = 'I0'
+            else:
+                prs = self.map.isMapped(instr.rs)
+                if prs is None:
+                    prs = self.freeList.assign()
+            self.map.setLog2Phy(instr.rs,prs)
 
+            if instr.rt == 'r0':
+                prt = 'I0'
+            else:
+                prt = self.map.isMapped(instr.rt)
+                if prt is None:
+                    prt = self.freeList.assign()
+            self.map.setLog2Phy(instr.rt,prt)
 
-            prd = self.freeList.assign()
+            if instr.rd == 'r0':
+                prd = 'I0'
+            else:
+                prd = self.freeList.assign()
+            self.map.setLog2Phy(instr.rd,prd)
             # prs = self.freeList.assign()
             # prt = self.freeList.assign()
 
@@ -288,16 +360,27 @@ class ActiveList:
             # print instr.rd,'<-',instr.rs,'FPADD',instr.rt
             # print instr.rd,'<-',instr.rs,'INTOP',instr.rt
 
-            prs = self.map.isMapped(instr.rs)
-            if prs == None:
-                prs = self.freeList.assign()
-            
-            prt = self.map.isMapped(instr.rt)
-            if prt == None:
-                prt = self.freeList.assign()
-            
+            if instr.rs == 'r0':
+                prs = 'I0'
+            else:
+                prs = self.map.isMapped(instr.rs)
+                if prs is None:
+                    prs = self.freeList.assign()
+            self.map.setLog2Phy(instr.rs,prs)
 
-            prd = self.freeList.assign()
+            if instr.rt == 'r0':
+                prt = 'I0'
+            else:
+                prt = self.map.isMapped(instr.rt)
+                if prt is None:
+                    prt = self.freeList.assign()
+            self.map.setLog2Phy(instr.rt,prt)
+
+            if instr.rd == 'r0':
+                prd = 'I0'
+            else:
+                prd = self.freeList.assign()
+            self.map.setLog2Phy(instr.rd,prd)
             # prs = self.freeList.assign()
             # prt = self.freeList.assign()
 
@@ -328,21 +411,34 @@ class ActiveList:
                 # Adding that to ROB
                 self.add2ROB(line, instr.rd, prd, instr)
 
-            # pass
+            pass
         elif instr.op == 'M':
             # print instr.rd,'<-',instr.rs,'FPMUL',instr.rt
             # print instr.rd,'<-',instr.rs,'INTOP',instr.rt
 
-            prs = self.map.isMapped(instr.rs)
-            if prs == None:
-                prs = self.freeList.assign()
-            
-            prt = self.map.isMapped(instr.rt)
-            if prt == None:
-                prt = self.freeList.assign()
-            
+            if instr.rs == 'r0':
+                prs = 'I0'
+            else:
 
-            prd = self.freeList.assign()
+                prs = self.map.isMapped(instr.rs)
+                if prs == None:
+                    prs = self.freeList.assign()
+            self.map.setLog2Phy(instr.rs,prs)
+
+            if instr.rt == 'r0':
+                prt = 'I0'
+            else:
+                prt = self.map.isMapped(instr.rt)
+                if prt == None:
+                    prt = self.freeList.assign()
+
+            self.map.setLog2Phy(instr.rt,prt)
+            
+            if instr.rd == 'r0':
+                prd = 'I0'
+            else:
+                prd = self.freeList.assign()
+            self.map.setLog2Phy(instr.rd,prd)
             # prs = self.freeList.assign()
             # prt = self.freeList.assign()
 
@@ -358,6 +454,10 @@ class ActiveList:
                 self.map.setLog2Phy(instr.rd,prd)
 
                 mappedInstr = prd,'<-',prs,'FPMUL',prt
+
+                instr.prs = prs
+                instr.prt = prt
+                instr.prd = prd
                 instr.add2MappedDecoding(mappedInstr)
 
                 # Will set the physical register used as a destination to busy
@@ -374,18 +474,26 @@ class ActiveList:
             # print instr.rd,'<-',instr.rs,'INTOP',instr.rt
             # prd = self.freeList.assign()
 
-            prs = self.map.isMapped(instr.rs)
-            if prs is None:
-                prs = self.freeList.assign()
-            
-            prt = self.map.isMapped(instr.rt)
-            if prt is None:
-                prt = self.freeList.assign()
+            if instr.rs == 'r0':
+                prs = 'I0'
+            else:
+                prs = self.map.isMapped(instr.rs)
+                if prs is None:
+                    prs = self.freeList.assign()
+            self.map.setLog2Phy(instr.rs,prs)
+
+            if instr.rt == 'r0':
+                prt = 'I0'
+            else:
+                prt = self.map.isMapped(instr.rt)
+                if prt is None:
+                    prt = self.freeList.assign()
+            self.map.setLog2Phy(instr.rt,prt)
 
             # prs = self.freeList.assign()
             # prt = self.freeList.assign()
 
-            if prs == None or prt == None:
+            if prs is None or prt is None:
                 self.map.setNote('We are out of Physical Registers')
 
             else:

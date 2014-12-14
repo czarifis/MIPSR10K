@@ -20,6 +20,8 @@ class RegisterMapTables:
         self.Note = note
 
     def isMapped(self, key):
+        if key is 'r0':
+            return 'I0'
         try:
             return self.LogToPhy[key][-1]
         except:

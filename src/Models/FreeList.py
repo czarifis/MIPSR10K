@@ -24,7 +24,7 @@ class FreeList:
         This function assigns(returns and removes from the list) a physical register.
         If the list is empty it returns None 
     '''
-    def assign(self,source = None):
+    def assign(self, source = None):
         if source == None:
             print 'Assigning a new physical register'
             try:

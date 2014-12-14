@@ -15,6 +15,7 @@ class FPADD2:
         self.curr_instr = FPADD1FPADD2
         if FPADD1FPADD2 is not None:
             active_list.fp_queue.make_available('FPADD', FPADD1FPADD2.prd)
+            active_list.integer_queue.make_available('ALU2', FPADD1FPADD2.prd)
             pass
         return self.curr_instr
 

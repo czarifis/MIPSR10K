@@ -1,11 +1,11 @@
 '''
-Created on Dec 5, 2014
+Created on Dec 7, 2014
 
 @author: Costas Zarifis
 '''
 
 
-class FPADD3:
+class FPMUL3:
     def __init__(self):
         self.clc = 0
         self.curr_instr = None
@@ -26,7 +26,7 @@ class FPADD3:
     def edge(self, df, dfMap, active_list):
         self.clc += 1
         if self.curr_instr is not None:
-            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FPADD3'
+            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FPMUL3'
 
 
             # empty the "queue"

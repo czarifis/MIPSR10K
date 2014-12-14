@@ -29,20 +29,26 @@ class Decode:
 
     def __init__(self):
 
-        self.currInstrs = None
+        self.currInstrs = {}
         self.clc = 0
         self.currDecodedInstrs = {}
+        self.currIssuedInstrs = {}
 
     
 
     def calc(self, df, instructions, activeList):
         # print 'Decode calc'
-       
+        self.currIssuedInstrs = {}
         if instructions is not None:
             # print instructions
             # Inst = ins.Instruction()
             
-            self.currInstrs = instructions
+            # self.currInstrs = instructions
+
+            d4 = dict(self.currInstrs)
+            d4.update(instructions)
+            self.currInstrs = d4
+
             self.iterOverInstructions(activeList)
             return self.currDecodedInstrs
         else:
@@ -51,13 +57,33 @@ class Decode:
     # This function iterates over 4 instructions at each cycle
     def iterOverInstructions(self,activeList):
         self.currDecodedInstrs = {}
-        for instr in self.currInstrs:
+        it = 0
+        about_to_be_deleted = []
+
+        for instr in sorted(self.currInstrs):
             (line, actualInstr) = self.currInstrs[instr]
-            print 'Instruction about to get decoded:', actualInstr
-            Inst = ins.Instruction(line, actualInstr)
-            Inst.printInstr()
-            self.currDecodedInstrs[instr] = Inst
-            activeList.process_decode(line, Inst)
+            if line == 39:
+                pass
+
+            # print 'Instruction about to get decoded:', actualInstr
+            try:
+                Inst = ins.Instruction(line, actualInstr)
+                Inst.printInstr()
+
+                activeList.process_decode(line, Inst)
+                self.currDecodedInstrs[instr] = Inst
+                self.currIssuedInstrs[instr] = self.currInstrs[instr]
+                about_to_be_deleted.append(line)
+                # activeList.process_add2queue(Inst)
+                it += 1
+                if it == 4:
+                    break
+            except:
+                print 'ROB is full I need to stall the Decode stage', line
+                break
+
+        for ii in about_to_be_deleted:
+            del self.currInstrs[ii]
 
             # self.currInstrs[line] = Inst
 
@@ -71,8 +97,8 @@ class Decode:
         dfMap.xs(5)[self.clc] = activeList.integer_queue.to_string()
         dfMap.xs(6)[self.clc] = activeList.fp_queue.to_string()
 
-        if self.currInstrs is not None:
-            for k in self.currInstrs.keys():
+        if self.currIssuedInstrs:
+            for k in sorted(self.currIssuedInstrs.keys()):
                 # print 'assigning this:',self.currInstrs[k] ,'sth', self.currDecodedInstrs[k]
                 # df.xs(k)['Instruction'] = ''+self.currInstrs[k] +' # Decoded: '+ self.currDecodedInstrs[k]
                 df.xs(k)['Logical'] = self.currDecodedInstrs[k].toStr()
@@ -83,7 +109,7 @@ class Decode:
                 # print 'registered an ID stage on location:', k, self.clc
 
             # empty the "queue"
-            self.currInstrs = None
+            # self.currInstrs = None
             
             # dfMap.xs(0)[self.clc] = activeList.map.prettyTable()
         
