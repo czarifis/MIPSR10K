@@ -130,6 +130,9 @@ class Instruction:
         print ret
         return ret
 
+    def clear_instruction(self):
+        pass
+
     def toStr(self):
         ret = self.decoding
         return ret

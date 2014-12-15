@@ -1,0 +1,166 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LaTeX Example: Project Report
+%
+% Source: http://www.howtotex.com
+%
+% Feel free to distribute this example, but please keep the referral
+% to howtotex.com
+% Date: March 2011 
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% How to use writeLaTeX: 
+%
+% You edit the source code here on the left, and the preview on the
+% right shows you the result within a few seconds.
+%
+% Bookmark this page and share the URL with your co-authors. They can
+% edit at the same time!
+%
+% You can upload figures, bibliographies, custom classes and
+% styles using the files menu.
+%
+% If you're new to LaTeX, the wikibook is a great place to start:
+% http://en.wikibooks.org/wiki/LaTeX
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Edit the title below to update the display in My Documents
+%\title{Project Report}
+%
+%%% Preamble
+\documentclass[paper=a4, fontsize=11pt]{scrartcl}
+\usepackage[T1]{fontenc}
+\usepackage{fourier}
+\usepackage{hyperref}
+
+\usepackage[english]{babel}															% English language/hyphenation
+\usepackage[protrusion=true,expansion=true]{microtype}	
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage[pdftex]{graphicx}	
+\usepackage{url}
+
+\usepackage{listings}
+\usepackage{color}
+%%% Custom sectioning
+\usepackage{sectsty}
+\allsectionsfont{\centering \normalfont\scshape}
+
+
+%%% Custom headers/footers (fancyhdr package)
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\fancyhead{}											% No page header
+\fancyfoot[L]{}											% Empty 
+\fancyfoot[C]{}											% Empty
+\fancyfoot[R]{\thepage}									% Pagenumbering
+\renewcommand{\headrulewidth}{0pt}			% Remove header underlines
+\renewcommand{\footrulewidth}{0pt}				% Remove footer underlines
+\setlength{\headheight}{13.6pt}
+
+
+%%% Equation and float numbering
+\numberwithin{equation}{section}		% Equationnumbering: section.eq#
+\numberwithin{figure}{section}			% Figurenumbering: section.fig#
+\numberwithin{table}{section}				% Tablenumbering: section.tab#
+
+
+%%% Maketitle metadata
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
+
+\title{
+		%\vspace{-1in} 	
+		\usefont{OT1}{bch}{b}{n}
+		\normalfont \normalsize \textsc{University of California, San Diego} \\ [25pt]
+		\horrule{0.5pt} \\[0.4cm]
+		\huge CSE 240A - Graduate Computer Architecture \\
+		\horrule{2pt} \\[0.5cm]
+}
+\author{
+		\normalfont 			Project Phase II - Traces	\\				\normalsize
+		Test name - Fortunate Instruction Mix  \\
+        \normalfont Costas Zarifis\\[-3pt]		\normalsize
+        \today
+}
+\date{}
+
+
+%%% Begin document
+\begin{document}
+\maketitle
+\section{Test Description - Expected Outcome}
+
+After executing a series of FP instructions with
+read after write dependencies, the floating point queue gets filled up. During the next cycle, the Fetch stage feeds the decode stage with 4
+integer instructions. If the
+active list is empty and the integer queue is
+also empty (which will be the case in this test) the 4 instructions are going to
+get pushed to the integer list and get issued
+during the next stage even if the FP queue is
+full. As a result the integer instructions get issued and executed before the floating points instructions.
+
+\section{Trace File - Results}
+The trace file which can be found on the submitted HTML page, on \href{http://zarifis.info/cse240AII.html}{this URL} and on the page bellow contains a series of floating point operations followed by integer operations. Notice that all floating point add instructions use the same physical register. After the registers get renamed the only kind of dependency that will still appear is RAW. Since the next instruction needs to wait until the second stage of the previous floating point operation, the floating point queue gets filled up. The reason why we have to wait until the end of the second cycle of the previous instruction and not until the commit stage is because there exists a forwarding path from the second stage of the execution to the beginning of the first one. Also notice that the integer operations don't have any dependencies.
+
+
+
+
+
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\newpage
+
+\begin{lstlisting}[caption=Fortunate Instruction Mix - Trace File]
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+A 01 01 01
+I 02 02 01
+I 02 02 01
+I 02 02 01
+I 02 02 01
+\end{lstlisting}
+
+
+
+That brings us to line 19. This line includes a floating point operation, however since the FP queue is full at that point, the decoded instruction has to wait before entering the queue until the 7th cycle, because at that point a previous instruction leaves the queue. Notice that the active list has the new instruction on the first appearance of the decode stage but the instruction actually enters the queue on the 7th cycle (both the active list and the FP list are available on the submitted HTML file). The same procedure is followed by instruction 20 but it has to wait even more until an instruction leaves the queue. 
+
+Notice however that the following four instractions are integer operations. Since there are no dependencies these instructions are issued without any delays and are executed two at a time by the corresponding ALU units. There are only two ALU units so these instructions obviously cannot get executed all at the same time.
+
+
+%%% End document
+\end{document}

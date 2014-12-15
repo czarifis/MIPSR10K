@@ -32,6 +32,7 @@ class Decode:
         self.currInstrs = {}
         self.clc = 0
         self.currDecodedInstrs = {}
+        self.decoded_but_not_added2the_queue = {}
         self.currIssuedInstrs = {}
 
     
@@ -63,28 +64,42 @@ class Decode:
 
         for instr in sorted(self.currInstrs):
             (line, actualInstr) = self.currInstrs[instr]
-            if line == 39:
+            if line == 18:
                 pass
 
             # print 'Instruction about to get decoded:', actualInstr
-            try:
+            if line not in self.decoded_but_not_added2the_queue:
                 Inst = ins.Instruction(line, actualInstr)
                 Inst.printInstr()
+            try:
+                # Decode the instruction and map the logical to physical
+                # registers
+                if line not in self.decoded_but_not_added2the_queue:
+                    activeList.process_decode(line, Inst)
+                    self.decoded_but_not_added2the_queue[line] = Inst
+                else:
+                    Inst = self.decoded_but_not_added2the_queue[line]
+                try:
+                    activeList.process_add2queue(Inst)
+                except:
+                    print 'A Queue is full I need to stall the Decode stage', line
+                    continue
 
-                activeList.process_decode(line, Inst)
+
                 self.currDecodedInstrs[instr] = Inst
                 self.currIssuedInstrs[instr] = self.currInstrs[instr]
                 about_to_be_deleted.append(line)
-                activeList.process_add2queue(Inst)
+
                 it += 1
-                if it == 4:
-                    break
+                # if it == 4:
+                #     break
             except:
-                print 'ROB is full I need to stall the Decode stage', line
+                print 'An Active list is full I need to stall the Decode stage', line
                 break
 
         for ii in about_to_be_deleted:
             del self.currInstrs[ii]
+            del self.decoded_but_not_added2the_queue[ii]
 
             # self.currInstrs[line] = Inst
 
@@ -107,6 +122,11 @@ class Decode:
                 
                 print k, self.clc
                 df.xs(k)[str(self.clc)] = 'ID'
+
+        if self.decoded_but_not_added2the_queue:
+            for k in sorted(self.decoded_but_not_added2the_queue):
+                df.xs(k)[str(self.clc)] = 'ID'
+
                 # print 'registered an ID stage on location:', k, self.clc
 
             # empty the "queue"

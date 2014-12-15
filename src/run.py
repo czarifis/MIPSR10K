@@ -67,6 +67,7 @@ class Main:
         FPADD1Instr = None
 
         # if self.AFTERISSUE == 0:
+        issue_res = IiStage.calc(df, self.IDIIReg, self.ActiveList, args)
 
         # Let's put FPADD1 first... It's a timing thing...
         FPADD1Instr = FPADD1Stage.calc(df, self.ActiveList, self.AFTERISSUE)
@@ -76,19 +77,39 @@ class Main:
         ALU2Stage.calc(df, self.ActiveList, self.AFTERISSUE)
 
 
-        issue_res = IiStage.calc(df, self.IDIIReg, self.ActiveList, args)
         # issue_res = None
         # print '##### Instructions:',instructions,'#####'
         # Passing the IF/ID register (which holds the instructions)
         # and the Active List (ROB)
         instructions2 = IdStage.calc(df, self.IFIDReg, self.ActiveList)
         self.IFIDReg = instructions
+
+
+
         self.IDIIReg = instructions2
 
+        # if not self.AFTERISSUE:
+        #     if not issue_res :
+        #         self.AFTERISSUE = {}
+        #     else:
+        #         self.AFTERISSUE = issue_res
+        #         self.AFTERISSUE['wasEmpty'] = True
+        # else:
+        #     if not issue_res:
+        #         self.AFTERISSUE = {}
+        #         self.AFTERISSUE['wasEmpty'] = False
+        #     else:
+        #         self.AFTERISSUE = issue_res
+        #         self.AFTERISSUE['wasEmpty'] = False
         if issue_res is None:
             self.AFTERISSUE = {}
         else:
             self.AFTERISSUE = issue_res
+
+
+
+
+
 
         FPADD2Instr = FPADD2Stage.calc(df, self.FPADD1FPADD2, self.ActiveList)
         self.FPADD1FPADD2 = FPADD1Instr
@@ -177,7 +198,8 @@ if __name__ == '__main__':
     # while True:
     
     # compute number of clocks (might need to do sth better than this)
-    clocks = sum(1 for line in args.filename)+100
+    # clocks = sum(1 for line in args.filename)+100
+    clocks = 50
     print 'clocks', clocks
 
     # reset file pointer

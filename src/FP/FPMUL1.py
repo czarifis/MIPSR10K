@@ -14,10 +14,15 @@ class FPMUL1:
         # if after_issue == 0:
         self.curr_instr = None
         # record = self.access_queue(active_list)
+
+
+
         if 'FP2' in reg.keys():
             record = reg['FP2']
         else:
             record = None
+
+
         if record is not None:
             ins = record.Instruction
             # ins.prd = active_list.map.isMapped(ins.rd)
@@ -25,6 +30,10 @@ class FPMUL1:
             # ins.prt = active_list.map.isMapped(ins.rt)
             ins.rs = record.I1
             ins.rs = record.I2
+            active_list.fp_queue.make_available('FPADD', ins.prd)
+            active_list.fp_queue.make_available('FPMUL', ins.prd)
+            active_list.integer_queue.make_available('ALU2', ins.prd)
+            active_list.integer_queue.make_available('ALU1', ins.prd)
 
             self.curr_instr = ins
             # pass
@@ -48,7 +57,7 @@ class FPMUL1:
         self.clc += 1
         if self.curr_instr is not None:
             # pass
-            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FP2'
+            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FP2(I)'
 
 
             # empty the "queue"

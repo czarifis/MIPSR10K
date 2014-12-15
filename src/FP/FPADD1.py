@@ -9,11 +9,31 @@ class FPADD1:
     def __init__(self):
         self.clc = 0
         self.curr_instr = None
+        self.prev_input = []
 
     def calc(self, df, active_list, reg):
         # if after_issue == 0:
         self.curr_instr = None
         # record = self.access_queue(active_list)
+
+
+        # if 'wasEmpty' in reg.keys():
+        #     if reg['wasEmpty']:
+        #         if 'FP1' in reg.keys():
+        #             recordQ = reg['FP1']
+        #             self.prev_input.append(recordQ)
+        #             record = None
+        #     else:
+        #         if 'FP1' in reg.keys():
+        #             recordQ = reg['FP1']
+        #             self.prev_input.append(recordQ)
+        #         try:
+        #             record = self.prev_input[0]
+        #         except:
+        #             record = None
+        #             self.prev_input.remove(record)
+        # else:
+        #     record = None
         if 'FP1' in reg.keys():
             record = reg['FP1']
         else:
@@ -25,6 +45,11 @@ class FPADD1:
             # ins.prt = active_list.map.isMapped(ins.rt)
             ins.rs = record.I1
             ins.rs = record.I2
+
+            active_list.fp_queue.make_available('FPADD', ins.prd)
+            active_list.fp_queue.make_available('FPMUL', ins.prd)
+            active_list.integer_queue.make_available('ALU2', ins.prd)
+            active_list.integer_queue.make_available('ALU1', ins.prd)
 
             self.curr_instr = ins
 
@@ -50,7 +75,7 @@ class FPADD1:
         self.clc += 1
         if self.curr_instr is not None:
             # pass
-            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FP1'
+            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FP1(I)'
 
 
             # empty the "queue"

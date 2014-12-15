@@ -26,7 +26,7 @@ class FPMUL3:
     def edge(self, df, dfMap, active_list):
         self.clc += 1
         if self.curr_instr is not None:
-            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FP2'
+            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'FP2(III)'
 
 
             # empty the "queue"
