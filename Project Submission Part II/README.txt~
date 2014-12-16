@@ -1,0 +1,9 @@
+Name:	Costas (Konstantinos) Zarifis
+PID:	A53054234
+
+* The TraceFiles.zip contains the trace file that is being analyzed (It is also contained in the two report files). 
+
+* The TraceReport.html contains the the pipeline diagram for each cycle and it also contains the trace file, the contents of the queues, the busy bit table the active list etc, again for each cycle .
+
+* The TraceReport.pdf contains an explanation of what exactly is going on in this test case. Please have the TraceReport.html open when reading the pdf as it uses that as a reference.
+
