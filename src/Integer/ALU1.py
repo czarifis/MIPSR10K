@@ -24,22 +24,33 @@ class ALU1:
             # ins.prd = active_list.map.isMapped(ins.rd)
             # ins.prs = active_list.map.isMapped(ins.rs)
             # ins.prt = active_list.map.isMapped(ins.rt)
-            ins.rs = record.I1
-            ins.rs = record.I2
+            # ins.rs = record.I1
+            # ins.rs = record.I2
+
+
 
             self.curr_instr = ins
+
+            if ins.prediction == '1':
+                err = {}
+                err['line'] = ins.line_number
+                err['ROB'] = ins.ROB
+                active_list.ROB = ins.ROB
+                return err
 
             active_list.integer_queue.make_available('ALU2', ins.prd)
             active_list.integer_queue.make_available('ALU1', ins.prd)
             active_list.fp_queue.make_available('FPADD', ins.prd)
             active_list.fp_queue.make_available('FPMUL', ins.prd)
+            active_list.address_queue.make_available(ins.prd)
+
             self.prev_dest = ins.prd
             active_list.set_rob_record2done(ins.line_number)
             # pass
         else:
             if self.prev_dest is not None:
                 active_list.integer_queue.make_available('ALU2', self.prev_dest)
-        return self.curr_instr
+        # return self.curr_instr
 
     def access_queue(self, active_list):
         list_tuple = active_list.int_queue_pop('ALU2')

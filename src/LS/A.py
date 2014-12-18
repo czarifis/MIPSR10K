@@ -26,6 +26,12 @@ class A:
             # ins.prt = active_list.map.isMapped(ins.rt)
             ins.rs = record.I1
             ins.rs = record.I2
+            active_list.integer_queue.make_available('ALU2', ins.prt)
+            active_list.integer_queue.make_available('ALU1', ins.prt)
+            active_list.fp_queue.make_available('FPADD', ins.prt)
+            active_list.fp_queue.make_available('FPMUL', ins.prt)
+            active_list.address_queue.make_available(ins.prt)
+
             active_list.address_queue_address_of_line_is_ready(ins)
 
 

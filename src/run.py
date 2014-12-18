@@ -42,6 +42,7 @@ class Main:
         self.FPMUL1FPMUL2 = None
         self.FPMUL2FPMUL3 = None
         self.AFTERISSUE = {}
+        self.MISPREDICT = None
         self.ALSReg = -1
         self.ActiveList = ActiveList.ActiveList()
 
@@ -65,7 +66,7 @@ class Main:
         # of instructions that can be issued per cycle
 
 
-        WBStage.calc(df, self.ActiveList)
+
 
         FPADD1Instr = None
 
@@ -76,12 +77,16 @@ class Main:
         FPADD1Instr = FPADD1Stage.calc(df, self.ActiveList, self.AFTERISSUE)
         FPMUL1Instr = FPMUL1Stage.calc(df, self.ActiveList, self.AFTERISSUE)
 
-        ALU1Stage.calc(df, self.ActiveList, self.AFTERISSUE)
-        ALU2Stage.calc(df, self.ActiveList, self.AFTERISSUE)
+
 
 
         # df, self.IDIIReg, self.ActiveList, args
         # df, self.ActiveList, self.AFTERISSUE
+
+        # WB has to be after LS stage!
+        WBStage.calc(df, self.ActiveList)
+        mis_error = ALU1Stage.calc(df, self.ActiveList, self.AFTERISSUE)
+        ALU2Stage.calc(df, self.ActiveList, self.AFTERISSUE, self.MISPREDICT)
         LSStage.calc(df, self.ALSReg, self.ActiveList, args)
 
         Astage_output = AStage.calc(df, self.ActiveList, self.AFTERISSUE)
@@ -133,6 +138,9 @@ class Main:
 
         FPMUL3Stage.calc(df, self.FPMUL2FPMUL3, self.ActiveList)
         self.FPMUL2FPMUL3 = FPMUL2Instr
+
+
+        self.MISPREDICT = mis_error
 
 
 
@@ -214,7 +222,7 @@ if __name__ == '__main__':
     
     # compute number of clocks (might need to do sth better than this)
     # clocks = sum(1 for line in args.filename)+100
-    clocks = 50
+    clocks = 500
     print 'clocks', clocks
 
     # reset file pointer

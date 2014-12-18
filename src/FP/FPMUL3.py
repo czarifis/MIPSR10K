@@ -14,10 +14,13 @@ class FPMUL3:
         self.curr_instr = pipeline_register
 
         if pipeline_register is not None:
-            # active_list.fp_queue.make_available('FPADD', pipeline_register.prd)
+
             active_list.fp_queue.make_available('FPADD', pipeline_register.prd)
             active_list.fp_queue.make_available('FPMUL', pipeline_register.prd)
             active_list.integer_queue.make_available('ALU2', pipeline_register.prd)
+            active_list.integer_queue.make_available('ALU1', pipeline_register.prd)
+            active_list.address_queue.make_available(pipeline_register.prd)
+
             active_list.set_rob_record2done(pipeline_register.line_number)
 
         return self.curr_instr

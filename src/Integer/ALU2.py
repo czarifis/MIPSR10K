@@ -10,8 +10,11 @@ class ALU2:
         self.clc = 0
         self.curr_instr = None
         self.prev_dest = None
+        self.miss = False
 
-    def calc(self, df, active_list, reg):
+    def calc(self, df, active_list, reg, mispredict):
+
+
         # if after_issue == 0:
         self.curr_instr = None
         # record = self.access_queue(active_list)
@@ -33,6 +36,9 @@ class ALU2:
             active_list.integer_queue.make_available('ALU1', ins.prd)
             active_list.fp_queue.make_available('FPADD', ins.prd)
             active_list.fp_queue.make_available('FPMUL', ins.prd)
+            active_list.address_queue.make_available(ins.prd)
+
+
             self.prev_dest = ins.prd
             active_list.set_rob_record2done(ins.line_number)
             # pass
@@ -44,9 +50,13 @@ class ALU2:
 
     def edge(self, df, dfMap, active_list):
         self.clc += 1
+
+
         if self.curr_instr is not None:
             df.xs(self.curr_instr.line_number)[str(self.clc)] = 'ALU2'
 
+        if self.miss is True:
+            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'X'
 
             # empty the "queue"
             # self.currInstrs = None

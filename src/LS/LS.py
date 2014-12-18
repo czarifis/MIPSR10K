@@ -25,6 +25,20 @@ class LS:
         ls_about2execute = self.dequeue_ls2execute(active_list)
         if ls_about2execute is not None:
             self.currIssuedInstrs.append(ls_about2execute.Instruction)
+            active_list.integer_queue.make_available('ALU2', ls_about2execute.Instruction.prt)
+            active_list.integer_queue.make_available('ALU1', ls_about2execute.Instruction.prt)
+            active_list.fp_queue.make_available('FPADD', ls_about2execute.Instruction.prt)
+            active_list.fp_queue.make_available('FPMUL', ls_about2execute.Instruction.prt)
+            active_list.address_queue.make_available(ls_about2execute.Instruction.prt)
+
+
+
+            # That's for LS unit only:
+            # active_list.address_queue.make_address_available(ls_about2execute.Instruction.extra)
+
+
+
+            active_list.set_rob_record2done(ls_about2execute.Instruction.line_number)
 
             # instrz = active_list.go_over_queues()
             # self.currIssuedInstrs = self.currIssuedInstrs + instrz

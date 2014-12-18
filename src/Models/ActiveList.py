@@ -9,6 +9,7 @@ import busyBitTables
 import IntegerQueue
 import AddressQueue
 import FPQueue
+import copy
 
 
 class ActiveListRecord:
@@ -129,13 +130,15 @@ class ActiveList:
 
             if e.done_but_not_graduated() is True:
                 if self.inst_graduated_previously is None:
-                    e.graduated = True
-                    ret_list.append(e.instruction)
-                    self.inst_graduated_previously = e.instruction
-                    self.line_graduated_previously = rem_counter
-                    counter += 1
-                    if counter % 4 == 0:
-                        break
+                    if e.instruction.line_number != 2:
+                        e.graduated = True
+                        ret_list.append(e.instruction)
+                        self.inst_graduated_previously = e.instruction
+                        self.line_graduated_previously = rem_counter
+                        counter += 1
+                        if counter % 4 == 0:
+                            break
+
                 else:
                     ll1 = self.line_graduated_previously + 1
                     ll = ll1 % 32
@@ -248,12 +251,6 @@ class ActiveList:
 
         if instr.op == 'L':
             # print instr.rt, '<-', instr.extra, '(', instr.rs, ')'
-
-            ########################################################
-            # Need to figure out which is the destination
-            # and which is the register that "adds" to the address
-            ########################################################
-
 
             # r0 is always I0
             if instr.rs == 'r0':
@@ -542,11 +539,17 @@ class ActiveList:
                 print instr.rt,'->',prt
                 self.map.setLog2Phy(instr.rt,prt)
                 mappedInstr = 'BEQ,',prs,',',prt,',xx,',instr.prediction
+                instr.prs = prs
+                instr.prt = prt
+
+                instr.ROB = copy.deepcopy(self.ROB)
+
+
+
                 instr.add2MappedDecoding(mappedInstr)
 
-                # self.integer_queue.add2queue('ALU1', self.busy_bit_tables, self.map, instr)
+                self.add2ROB(line, instr.rt, prt, instr)
 
-                # Should I add sth to ROB?
 
             # pass
 

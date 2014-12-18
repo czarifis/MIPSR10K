@@ -18,6 +18,8 @@ class FPADD2:
             active_list.fp_queue.make_available('FPMUL', FPADD1FPADD2.prd)
             active_list.integer_queue.make_available('ALU2', FPADD1FPADD2.prd)
             active_list.integer_queue.make_available('ALU1', FPADD1FPADD2.prd)
+            active_list.address_queue.make_available(FPADD1FPADD2.prd)
+
             pass
         return self.curr_instr
 

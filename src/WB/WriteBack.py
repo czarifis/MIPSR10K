@@ -10,14 +10,15 @@ class WriteBack:
         self.clc = 0
         self.curr_instrs = None
 
+
     def calc(self, df, active_list):
         self.curr_instrs = None
         record = self.access_rob(active_list)
         if record is not None:
             self.curr_instrs = record
             # pass
-            self.free_from_busy_bit(active_list)
-            self.add2free_list(active_list)
+
+
             pass
         return self.curr_instrs
 
@@ -38,6 +39,12 @@ class WriteBack:
         for e in self.curr_instrs:
             active_list.freeList.freeReg(e.prd)
 
+    def make_address_available(self, active_list):
+        for e in self.curr_instrs:
+            if e.op == 'S':
+                active_list.address_queue.make_address_available(e.extra)
+
+
 
 
 
@@ -45,6 +52,11 @@ class WriteBack:
     def edge(self, df, dfMap, active_list):
         self.clc += 1
         if self.curr_instrs is not None:
+
             for i in self.curr_instrs:
 
                 df.xs(i.line_number)[str(self.clc)] = 'WB'
+
+            self.make_address_available(active_list)
+
+

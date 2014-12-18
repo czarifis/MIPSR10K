@@ -31,22 +31,25 @@ class AddressQueueRecord:
     # to_string method used to "pretty print" the output into a matrix
     def to_string(self):
         ret = ''
-        ret += '('+str(self.I1)+','+str(self.I1Busy)+')'
+        ret += '{('+str(self.I1)+','+str(self.I1Busy)+')'
         ret += '('+str(self.I2)+','+str(self.I2Busy)+')'
         ret += '('+str(self.Address)+','+str(self.Address_busy)+')'
+        ret += '(Address busy:'+str(self.Address_busy)+')'
         ret += '(Address computed:'+str(self.Address_computed)+')}'
         return ret
 
     # checks if the current record is busy
     def is_busy(self):
-        if self.I1Busy or self.I2Busy or self.Address_busy:
-            return True
+        if self.Instruction.op == 'L':
+            if self.I1Busy or self.I2Busy :
+                return True
+            else:
+                return False
         else:
-            return False
-            # if self.Address_computed is False:
-            #     return False
-            # else:
-            #     return True
+            if self.I1Busy or self.I2Busy:
+                return True
+            else:
+                return False
 
     # This function gets a physical register and
     # makes it available inside the queue
@@ -69,11 +72,21 @@ class AddressQueue:
     def __init__(self):
 
         self.queue = []
+        self.dependency_matrix = []
         # self.queue['ALU1'] = []
         # self.queue['ALU2'] = []
         # self.queue['ALU1']
         self.current_size = 0
         self.MAX_SIZE = 16
+
+    # This function traverses the elements of the address queue
+    # and returns true if the address is busy with a S instruction
+    def should_address_be_busy(self, addr):
+        ret = False
+        for element in self.queue:
+            if element.Address == addr and element.Instruction.op == 'S':
+                ret = True
+        return ret
 
     # Adding instruction to integer Queue
     def add2queue(self, busy_bit_table, register_map, instruction):
@@ -96,14 +109,40 @@ class AddressQueue:
             # will need to change that to figure out address dependencies #
             ###############################################################
             # (self, i1, i2, address, address_busy, busy_bit_t, instr):
-            rec = AddressQueueRecord(instruction.prs,instruction.prt, instruction.extra, False, busy_bit_table, instruction)
-            print rec
+
+            if instruction.op == 'L':
+                rec = AddressQueueRecord(instruction.prs, instruction.prt, instruction.extra,
+                                         self.should_address_be_busy(instruction.extra), busy_bit_table, instruction)
+                rec.I2Busy = False
+            else:
+                rec = AddressQueueRecord(instruction.prs, instruction.prt, instruction.extra,
+                                         True, busy_bit_table, instruction)
+                self.dependency_matrix.append((instruction.line_number, instruction.extra))
+
             self.queue.append(rec)
 
     # else:
     #         raise Exception('Address Queue can only hold'
     #                         ' instructions that are either'
     #                         ' store or load')
+
+    def check_dependency_matrix(self, line, address):
+        if not self.queue:
+            # No elements exist in the corresponding queue
+            return False
+        for record in self.dependency_matrix:
+            l, a = record
+            if line > l:
+                if a == address:
+                    return True
+        return False
+
+    def update_dependency_matrix(self, address):
+        for record in self.dependency_matrix:
+            l, a = record
+            if a == address:
+                self.dependency_matrix.remove(record)
+
 
     # This instruction returns a non-busy record from the queue
     def pop(self):
@@ -115,10 +154,16 @@ class AddressQueue:
             # are any ready to go (non-busy) tuples
             for element in self.queue:
                 if (element.is_busy() is False) and (element.issued is False):
-                    # self.queue.remove(element)
-                    # self.current_size -= 1
+                    # if self.check_dependency_matrix(element.Instruction.line_number,
+                    #                            element.Address):
+                    #     return None
+                    # else:
+                    #     element.issued = True
+                    #     return element
                     element.issued = True
                     return element
+
+                    # return element
             return None
 
     # This function is used by the LS execution unit to pop instructions in order
@@ -129,10 +174,24 @@ class AddressQueue:
         else:
             e = self.queue[0]
             if e.is_busy() is False and e.Address_computed is True:
-                print e, 'is ready to LS'
-                self.queue.remove(e)
-                self.current_size -= 1
-                return e
+                if e.Instruction.op == 'S':
+                    print e, 'is ready to LS'
+                    self.queue.remove(e)
+                    self.current_size -= 1
+                    return e
+                else:
+                    if e.Address_busy is False:
+                        if self.check_dependency_matrix(e.Instruction.line_number,
+                                                        e.Address):
+                            return None
+                        else:
+                        #     e.issued = True
+                        #     return e
+                            print e, 'is ready to LS'
+                            self.queue.remove(e)
+                            self.current_size -= 1
+                            return e
+
 
     # This function returns every instruction that is still inside the integer queue
     def return_instructions(self):
@@ -166,6 +225,17 @@ class AddressQueue:
             # registers that should be available on the next cycle
             for element in self.queue:
                 element.make_available(register)
+
+    def make_address_available(self, address):
+        if not self.queue:
+            # No elements exist in the corresponding queue
+            return None
+        else:
+            # OK! Let's traverse the queue to find if there
+            # registers that should be available on the next cycle
+            for element in self.queue:
+                element.make_address_available(address)
+            self.update_dependency_matrix(address)
 
     # function used for "pretty printing"
     def to_string(self):

@@ -14,6 +14,7 @@ class Instruction:
         self.prt = None  # physical source register 2 assigned during first stage of execution
         self.prs = None  # physical source register 1 assigned during first stage of execution
         self.extra = None  # extra/immediate
+        self.ROB = []
         '''
             TODO: 
             If the extra field is 0, it means after execution the branch were correctly 

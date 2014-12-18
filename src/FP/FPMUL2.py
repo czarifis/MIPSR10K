@@ -18,6 +18,7 @@ class FPMUL2:
             active_list.fp_queue.make_available('FPMUL', FPMUL1FPMUL2.prd)
             active_list.integer_queue.make_available('ALU2', FPMUL1FPMUL2.prd)
             active_list.integer_queue.make_available('ALU1', FPMUL1FPMUL2.prd)
+            active_list.address_queue.make_available(FPMUL1FPMUL2.prd)
             pass
         return self.curr_instr
 
