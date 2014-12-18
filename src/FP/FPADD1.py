@@ -50,7 +50,7 @@ class FPADD1:
             active_list.fp_queue.make_available('FPMUL', ins.prd)
             active_list.integer_queue.make_available('ALU2', ins.prd)
             active_list.integer_queue.make_available('ALU1', ins.prd)
-
+            active_list.address_queue.make_available(ins.prd)
             self.curr_instr = ins
 
 

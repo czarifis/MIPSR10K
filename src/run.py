@@ -20,6 +20,8 @@ import FP.FPADD3 as FPADD3
 import FP.FPMUL1 as FPMUL1
 import FP.FPMUL2 as FPMUL2
 import FP.FPMUL3 as FPMUL3
+import LS.A as A
+import LS.LS as LS
 import WB.WriteBack as WB
 import Integer.ALU1 as ALU1
 import Integer.ALU2 as ALU2
@@ -40,13 +42,14 @@ class Main:
         self.FPMUL1FPMUL2 = None
         self.FPMUL2FPMUL3 = None
         self.AFTERISSUE = {}
+        self.ALSReg = -1
         self.ActiveList = ActiveList.ActiveList()
 
     def calc(self, df, args, IfStage, IdStage,
              IiStage, FPADD1Stage, FPADD2Stage,
              FPADD3Stage, WBStage, ALU1Stage,
              FPMUL1Stage, FPMUL2Stage, FPMUL3Stage,
-             ALU2Stage):
+             ALU2Stage, AStage, LSStage):
         # print 'global calc'
         
         instructions = IfStage.calc(df, args)
@@ -77,12 +80,20 @@ class Main:
         ALU2Stage.calc(df, self.ActiveList, self.AFTERISSUE)
 
 
+        # df, self.IDIIReg, self.ActiveList, args
+        # df, self.ActiveList, self.AFTERISSUE
+        LSStage.calc(df, self.ALSReg, self.ActiveList, args)
+
+        Astage_output = AStage.calc(df, self.ActiveList, self.AFTERISSUE)
+
+
         # issue_res = None
         # print '##### Instructions:',instructions,'#####'
         # Passing the IF/ID register (which holds the instructions)
         # and the Active List (ROB)
         instructions2 = IdStage.calc(df, self.IFIDReg, self.ActiveList)
         self.IFIDReg = instructions
+        self.ALSReg = Astage_output
 
 
 
@@ -135,7 +146,7 @@ class Main:
              IiStage, FPADD1Stage, FPADD2Stage,
              FPADD3Stage, WBStage, ALU1Stage,
              FPMUL1Stage, FPMUL2Stage, FPMUL3Stage,
-             ALU2Stage):
+             ALU2Stage, AStage, LSStage):
         # print 'call the edge function of each stage'
         IfStage.edge(df, dfMap)
         # if self.clc > 1:
@@ -149,6 +160,8 @@ class Main:
         FPMUL3Stage.edge(df, dfMap, self.ActiveList)
         ALU1Stage.edge(df, dfMap, self.ActiveList)
         ALU2Stage.edge(df, dfMap, self.ActiveList)
+        AStage.edge(df, dfMap, self.ActiveList)
+        LSStage.edge(df, dfMap, self.ActiveList)
         WBStage.edge(df, dfMap, self.ActiveList)
 
 
@@ -193,6 +206,8 @@ if __name__ == '__main__':
     FPMUL3Stage = FPMUL3.FPMUL3()
 
     ALU1Stage = ALU1.ALU1()
+    LSStage = LS.LS()
+    AStage = A.A()
     ALU2Stage = ALU2.ALU2()
     WBStage = WB.WriteBack()
     # while True:
@@ -210,11 +225,13 @@ if __name__ == '__main__':
         m.calc(df, args, IfStage, IdStage, IiStage,
                FPADD1Stage, FPADD2Stage, FPADD3Stage,
                WBStage, ALU1Stage, FPMUL1Stage,
-               FPMUL2Stage, FPMUL3Stage, ALU2Stage)
+               FPMUL2Stage, FPMUL3Stage, ALU2Stage,
+               AStage, LSStage)
         m.edge(df, dfMap, IfStage, IdStage, IiStage,
                FPADD1Stage, FPADD2Stage, FPADD3Stage,
                WBStage, ALU1Stage, FPMUL1Stage,
-               FPMUL2Stage, FPMUL3Stage, ALU2Stage)
+               FPMUL2Stage, FPMUL3Stage, ALU2Stage,
+               AStage, LSStage)
     
     # class providing printing functionality
     pm = pr.prettifyme()

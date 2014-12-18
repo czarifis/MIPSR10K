@@ -51,6 +51,7 @@ class Fetch:
             dfMap.loc[4] = ['Notes:'] + a
             dfMap.loc[5] = ['Integer Queue:'] + a
             dfMap.loc[6] = ['FP Queue:'] + a
+            dfMap.loc[7] = ['Address Queue:'] + a
         
         for k in sorted(self.currInstrs.keys()):
             df.loc[k] = [self.currInstrs[k], '', ''] + a

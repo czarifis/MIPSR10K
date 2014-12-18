@@ -7,6 +7,7 @@ import FreeList
 import RegisterMapTables
 import busyBitTables
 import IntegerQueue
+import AddressQueue
 import FPQueue
 
 
@@ -77,6 +78,9 @@ class ActiveList:
 
         # FP Queue
         self.fp_queue = FPQueue.FPQueue()
+
+        # Address Queue
+        self.address_queue = AddressQueue.AddressQueue()
 
         # There are 32 addresses in the ActiveList 
         for i in range(32):
@@ -189,12 +193,23 @@ class ActiveList:
     def int_queue_pop(self, operation):
         return self.integer_queue.pop(operation)
 
+    def address_queue_pop(self):
+        return self.address_queue.pop()
+
+    def address_queue_pop2execute(self):
+        return self.address_queue.in_order_pop()
+
+    def address_queue_address_of_line_is_ready(self, inst):
+        self.address_queue.set_address_as_computed(inst)
+
     # This process is used during the decoding stage to take care
     # of all the Queues :)
     def process_add2queue(self, instr):
         if instr.op == 'L':
+            self.address_queue.add2queue(self.busy_bit_tables, self.map, instr)
             pass
         elif instr.op == 'S':
+            self.address_queue.add2queue(self.busy_bit_tables, self.map, instr)
             pass
         elif instr.op == 'I':
             # Adding instruction to integer queue
@@ -222,6 +237,7 @@ class ActiveList:
         ret = []
         ret = ret + self.integer_queue.return_instructions()
         ret = ret + self.fp_queue.return_instructions()
+        ret = ret + self.address_queue.return_instructions()
         return ret
 
     # This process is used during the decoding stage to take care
@@ -231,7 +247,13 @@ class ActiveList:
     def process_decode(self, line, instr):
 
         if instr.op == 'L':
-            # print instr.rt,'<-',instr.extra,'(',instr.rs,')'
+            # print instr.rt, '<-', instr.extra, '(', instr.rs, ')'
+
+            ########################################################
+            # Need to figure out which is the destination
+            # and which is the register that "adds" to the address
+            ########################################################
+
 
             # r0 is always I0
             if instr.rs == 'r0':
@@ -241,7 +263,7 @@ class ActiveList:
                 prs = self.map.isMapped(instr.rs)
                 if prs is None:
                     prs = self.freeList.assign()
-            self.map.setLog2Phy(instr.rs,prs)
+            self.map.setLog2Phy(instr.rs, prs)
 
             # prs = self.freeList.assign()
             # This is the destination
@@ -249,8 +271,11 @@ class ActiveList:
             if instr.rt is 'r0':
                 prt = 'I0'
             else:
+                # prt = self.map.isMapped(instr.rt)
+                # if prt is None:
                 prt = self.freeList.assign()
-            self.map.setLog2Phy(instr.rt,prt)
+
+            self.map.setLog2Phy(instr.rt, prt)
             if prs is None or prt is None:
                 self.map.setNote('We are out of Physical Registers')
 
@@ -260,6 +285,9 @@ class ActiveList:
                 self.map.setLog2Phy(instr.rs,prs)
                 print instr.rt, '->', prt
                 self.map.setLog2Phy(instr.rt,prt)
+
+                instr.prs = prs
+                instr.prt = prt
                 
                 mappedInstr = prt, '<-', instr.extra, '(', prs, ')'
                 instr.add2MappedDecoding(mappedInstr)
@@ -300,6 +328,9 @@ class ActiveList:
                 self.map.setLog2Phy(instr.rs,prs)
                 print instr.rt,'->',prt
                 self.map.setLog2Phy(instr.rt,prt)
+
+                instr.prs = prs
+                instr.prt = prt
 
                 mappedInstr = prt,'->',instr.extra,'(',prs,')'
                 instr.add2MappedDecoding(mappedInstr)

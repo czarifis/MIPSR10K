@@ -144,6 +144,15 @@ class Issue:
             d['ALU2'] = list_tuple
             # return list_tuple
 
+        list_tuple = active_list.address_queue_pop()
+        if list_tuple is None:
+            print 'Cannot de-queue from address point queue'
+            # Let's try to de-queue from the FPADD list
+        else:
+            print 'dequeueing from address point queue'
+            d['A'] = list_tuple
+            # return list_tuple
+
         return d
 
     def edge(self, df, dfMap, activeList):

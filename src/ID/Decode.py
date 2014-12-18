@@ -112,6 +112,7 @@ class Decode:
         dfMap.xs(4)[self.clc] = activeList.map.Note
         dfMap.xs(5)[self.clc] = activeList.integer_queue.to_string()
         dfMap.xs(6)[self.clc] = activeList.fp_queue.to_string()
+        dfMap.xs(7)[self.clc] = activeList.address_queue.to_string()
 
         if self.currIssuedInstrs:
             for k in sorted(self.currIssuedInstrs.keys()):
