@@ -38,6 +38,9 @@ class FPQueueRecord:
         else:
             return False
 
+    def get_line(self):
+        return self.Instruction.line_number
+
     # This function gets a physical register and
     # makes it available inside the queue
     def make_available(self, reg):
@@ -85,6 +88,47 @@ class FPQueue:
             raise Exception('FP Queue can only hold'
                             ' instructions that intend to '
                             'go to either FPADD or FPMUL')
+
+    # This function clears the data after
+    # the mispredicted branch from the FP queue
+    def mispredict_clear(self, data):
+        about_to_get_removed_fpadd = []
+        about_to_get_removed_fpmul = []
+        if not self.queue['FPADD']:
+            # No elements exist in the corresponding queue
+            return None
+        else:
+            # OK! Let's traverse the queue to find if there
+            # are any ready to go (non-busy) tuples
+            for element in self.queue['FPADD']:
+
+                if element.get_line() > data['line']:
+                    about_to_get_removed_fpadd.append(element)
+                    # self.queue['FPADD'].remove(element)
+                    # self.current_size -= 1
+        if not self.queue['FPMUL']:
+            # No elements exist in the corresponding queue
+            return None
+        else:
+            # OK! Let's traverse the queue to find if there
+            # are any ready to go (non-busy) tuples
+            for element in self.queue['FPMUL']:
+
+                if element.get_line() > data['line']:
+                    about_to_get_removed_fpmul.append(element)
+                    # self.queue['FPMUL'].remove(element)
+                    # self.current_size -= 1
+
+        for element in about_to_get_removed_fpadd:
+            self.queue['FPADD'].remove(element)
+            self.current_size -= 1
+        for element in about_to_get_removed_fpmul:
+            self.queue['FPMUL'].remove(element)
+            self.current_size -= 1
+
+
+
+
 
     # This instruction returns a non-busy record from the queue
     def pop(self, op):

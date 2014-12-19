@@ -11,9 +11,12 @@ class FPMUL2:
         self.curr_instr = None
 
 
-    def calc(self, df, FPMUL1FPMUL2, active_list):
+    def calc(self, df, FPMUL1FPMUL2, active_list, MISPREDICT):
         self.curr_instr = FPMUL1FPMUL2
         if FPMUL1FPMUL2 is not None:
+            if MISPREDICT is not None:
+                self.mispredicted = True
+                return None
             active_list.fp_queue.make_available('FPADD', FPMUL1FPMUL2.prd)
             active_list.fp_queue.make_available('FPMUL', FPMUL1FPMUL2.prd)
             active_list.integer_queue.make_available('ALU2', FPMUL1FPMUL2.prd)

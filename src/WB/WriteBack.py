@@ -23,6 +23,9 @@ class WriteBack:
         return self.curr_instrs
 
     def access_rob(self, active_list):
+        if self.clc == 10:
+            print 'boom'
+            pass
         list_inst = active_list.pop_from_active_list()
         if not list_inst:
             print 'Cannot write back'
@@ -55,7 +58,7 @@ class WriteBack:
 
             for i in self.curr_instrs:
 
-                df.xs(i.line_number)[str(self.clc)] = 'WB'
+                df.xs(i.line_number)[str(self.clc)] = 'C'
 
             self.make_address_available(active_list)
 

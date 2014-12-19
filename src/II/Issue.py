@@ -16,8 +16,10 @@ class Issue:
         self.currIssuedInstrs = []
         self.issue_times = 0
         self.clc = 0
+        self.mispredicted = False
+        self.mispredicted_data = None
 
-    def calc(self, df, pipeline_register, active_list, args):
+    def calc(self, df, pipeline_register, active_list, args, MISPREDICT):
 
         if pipeline_register == 0:
             self.issue_times = args.issue
@@ -28,6 +30,10 @@ class Issue:
 
             instrz = active_list.go_over_queues()
             self.currIssuedInstrs = self.currIssuedInstrs + instrz
+            if MISPREDICT is not None:
+                self.mispredicted = True
+                self.mispredicted_data = MISPREDICT
+                return None
             return about2go2execution_units
 
 
@@ -49,7 +55,7 @@ class Issue:
 
 
     # This function iterates over n instructions at each cycle
-    def iterOverInstructions(self, activeList, args):
+    def iterOverInstructions(self, activeList, args, MISPREDICT):
         it = 0
         about_to_be_deleted = []
         for instr in sorted(self.currInstrs):
@@ -161,7 +167,19 @@ class Issue:
 
         if self.currIssuedInstrs:
             for k in self.currIssuedInstrs:
-                df.xs(k.line_number)[str(self.clc)] = 'II'
+                if self.mispredicted is True and self.mispredicted_data['line'] < k.line_number:
+                    df.xs(k.line_number)[str(self.clc)] = 'X'
+
+
+                else:
+                    df.xs(k.line_number)[str(self.clc)] = 'II'
+        if self.mispredicted is True:
+            # We need to remove all instructions with line number later
+            # than the branch's from the queue
+            activeList.issue_mispredict(self.mispredicted_data)
+            self.mispredicted_data = None
+            self.mispredicted = False
+            pass
 
 
                 # print 'registered an ID stage on location:', k, self.clc

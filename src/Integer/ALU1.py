@@ -34,8 +34,11 @@ class ALU1:
             if ins.prediction == '1':
                 err = {}
                 err['line'] = ins.line_number
+                err['branch'] = ins
                 err['ROB'] = ins.ROB
-                active_list.ROB = ins.ROB
+                # active_list.ROB = ins.ROB
+                active_list.add2Branch_stack(err)
+                # active_list.set_rob_record2done(ins.line_number)
                 return err
 
             active_list.integer_queue.make_available('ALU2', ins.prd)

@@ -10,6 +10,7 @@ import IntegerQueue
 import AddressQueue
 import FPQueue
 import copy
+import BranchStack
 
 
 class ActiveListRecord:
@@ -61,6 +62,8 @@ class ActiveList:
         self.line_graduated_previously = -1
         # self.ROB = {}
         self.curr_length = 0
+        self.branch_happened = False
+        self.branch_info = None
 
         ### Extra stuff that I don't know where to put ###
 
@@ -83,10 +86,56 @@ class ActiveList:
         # Address Queue
         self.address_queue = AddressQueue.AddressQueue()
 
+        # Branch Stack
+        self.branch_stack = BranchStack.BranchStack()
+
         # There are 32 addresses in the ActiveList 
         for i in range(32):
             self.ROB.append(ActiveListRecord(None, None, None))
         #     self.ROB[i] =
+
+    # This function adds a record at the branch stack
+    def add2Branch_stack(self, rob):
+        self.branch_stack.add2stack(rob)
+
+    def return_instructions_after_branch(self, branch):
+        ret = {}
+        counter = 0
+        remove_from_rob = []
+        self.branch_happened = True
+        self.branch_info = branch
+        for e in self.ROB:
+            if e.instruction is not None:
+                if branch.line_number <= e.instruction.line_number:
+                    # Counter used to shift instructions
+                    counter += 1
+                    self.busy_bit_tables.setAsNonBusy(e.instruction.prd)
+                    self.freeList.freeReg(e.instruction.prd)
+                    self.map.remove_logical(e.instruction.prd)
+                    e.graduated = True
+                    e.done = True
+                    e.logicalDest = None
+                    # e.instruction = None
+                    e.physical = None
+                    # remove_from_rob.append(e)
+
+
+
+        for e in self.ROB:
+            if e.instruction is not None:
+                if branch.line_number == e.instruction.line_number:
+                    print 'found branch!!'
+                    branch_str = e.instruction.initial_instr
+                    branch_str = branch_str[:-1]
+                    branch_str += '0'
+                    ret[e.instruction.line_number+counter] = (e.instruction.line_number+counter, branch_str)
+                if branch.line_number < e.instruction.line_number:
+                    ret[e.instruction.line_number+counter] = (e.instruction.line_number+counter, e.instruction.initial_instr)
+
+        # for el in remove_from_rob:
+        #     self.ROB.remove(el)
+        # self.ROB = branch.ROB
+        return ret
 
     # This func adds a tuple into the ROB
     def add2ROB(self, line, logical, physical, inst):
@@ -114,6 +163,14 @@ class ActiveList:
     def set_rob_record2done(self, line):
         self.ROB[(line-1) % 32].set2done()
 
+    def check_if_prev_graduated(self, line):
+        for e in self.ROB:
+            if e.instruction is not None:
+                if line > e.instruction.line_number:
+                    if e.graduated is False:
+                        return False
+        return True
+
     def pop_from_active_list(self):
         ret_list = []
         counter = 0
@@ -140,17 +197,43 @@ class ActiveList:
                             break
 
                 else:
-                    ll1 = self.line_graduated_previously + 1
-                    ll = ll1 % 32
-                    if ll == rem_counter:
-                        e.graduated = True
-                        ret_list.append(e.instruction)
-                        self.inst_graduated_previously = e.instruction
-                        self.line_graduated_previously = rem_counter
-                        counter += 1
-                        if counter % 4 == 0:
-                            break
-                        pass
+                    if self.branch_happened:
+                        if e.instruction.line_number > self.branch_info.line_number:
+                            if self.check_if_prev_graduated(e.instruction.line_number):
+                                self.branch_happened = False
+                                e.graduated = True
+                                ret_list.append(e.instruction)
+                                self.inst_graduated_previously = e.instruction
+                                self.line_graduated_previously = rem_counter
+                                counter += 1
+                                if counter % 4 == 0:
+                                    break
+                                print 'Boom'
+                                pass
+                        else:
+                            ll1 = self.line_graduated_previously + 1
+                            ll = ll1 % 32
+                            if ll == rem_counter:
+                                e.graduated = True
+                                ret_list.append(e.instruction)
+                                self.inst_graduated_previously = e.instruction
+                                self.line_graduated_previously = rem_counter
+                                counter += 1
+                                if counter % 4 == 0:
+                                    break
+                                pass
+                    else:
+                        ll1 = self.line_graduated_previously + 1
+                        ll = ll1 % 32
+                        if ll == rem_counter:
+                            e.graduated = True
+                            ret_list.append(e.instruction)
+                            self.inst_graduated_previously = e.instruction
+                            self.line_graduated_previously = rem_counter
+                            counter += 1
+                            if counter % 4 == 0:
+                                break
+                            pass
             rem_counter += 1
                 # else:
 
@@ -179,6 +262,14 @@ class ActiveList:
         #             break
         #     prev_element = e
         return ret_list
+
+    # This function gets called when there's a mispredict
+    # and the instructions following the branch are supposed
+    # to get issued.
+    def issue_mispredict(self, data):
+        self.fp_queue.mispredict_clear(data)
+
+
 
 
 
@@ -516,7 +607,7 @@ class ActiveList:
                 prs = self.map.isMapped(instr.rs)
                 if prs is None:
                     prs = self.freeList.assign()
-            self.map.setLog2Phy(instr.rs,prs)
+            self.map.setLog2Phy(instr.rs, prs)
 
             if instr.rt == 'r0':
                 prt = 'I0'
@@ -552,4 +643,6 @@ class ActiveList:
 
 
             # pass
+
+
 

@@ -26,6 +26,12 @@ class RegisterMapTables:
             return self.LogToPhy[key][-1]
         except:
             return None
+    def remove_logical(self, logical):
+        if logical != 'I0':
+            for k in self.LogToPhy:
+                if logical in self.LogToPhy[k]:
+                    self.LogToPhy[k].remove(logical)
+
 
     def prettyTable(self, cssClass=''):
         dictionary = self.LogToPhy

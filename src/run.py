@@ -32,6 +32,7 @@ import Models.prettifyme as pr
 import Models.ActiveList as ActiveList
 
 
+
 class Main:
     def __init__(self):
         self.clc = 0
@@ -53,7 +54,7 @@ class Main:
              ALU2Stage, AStage, LSStage):
         # print 'global calc'
         
-        instructions = IfStage.calc(df, args)
+        instructions = IfStage.calc(df, args, self.ActiveList, self.MISPREDICT)
         # if self.clc > 1:
         # print self.IFIDReg
 
@@ -71,7 +72,7 @@ class Main:
         FPADD1Instr = None
 
         # if self.AFTERISSUE == 0:
-        issue_res = IiStage.calc(df, self.IDIIReg, self.ActiveList, args)
+        issue_res = IiStage.calc(df, self.IDIIReg, self.ActiveList, args, self.MISPREDICT)
 
         # Let's put FPADD1 first... It's a timing thing...
         FPADD1Instr = FPADD1Stage.calc(df, self.ActiveList, self.AFTERISSUE)
@@ -127,10 +128,10 @@ class Main:
 
 
 
-        FPADD2Instr = FPADD2Stage.calc(df, self.FPADD1FPADD2, self.ActiveList)
+        FPADD2Instr = FPADD2Stage.calc(df, self.FPADD1FPADD2, self.ActiveList, self.MISPREDICT)
         self.FPADD1FPADD2 = FPADD1Instr
 
-        FPMUL2Instr = FPMUL2Stage.calc(df, self.FPMUL1FPMUL2, self.ActiveList)
+        FPMUL2Instr = FPMUL2Stage.calc(df, self.FPMUL1FPMUL2, self.ActiveList, self.MISPREDICT)
         self.FPMUL1FPMUL2 = FPMUL1Instr
 
         FPADD3Stage.calc(df, self.FPADD2FPADD3, self.ActiveList)
@@ -212,6 +213,7 @@ if __name__ == '__main__':
     FPMUL1Stage = FPMUL1.FPMUL1()
     FPMUL2Stage = FPMUL2.FPMUL2()
     FPMUL3Stage = FPMUL3.FPMUL3()
+    # branch_control = branch_control.BranchControl()
 
     ALU1Stage = ALU1.ALU1()
     LSStage = LS.LS()
