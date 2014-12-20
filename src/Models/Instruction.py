@@ -13,6 +13,7 @@ class Instruction:
         self.prd = None  # physical destination register assigned during first stage of execution
         self.prt = None  # physical source register 2 assigned during first stage of execution
         self.prs = None  # physical source register 1 assigned during first stage of execution
+        self.clean_soon = [] # list with instructions about to get freed on commit
         self.extra = None  # extra/immediate
         self.initial_instr = instr
         self.ROB = []

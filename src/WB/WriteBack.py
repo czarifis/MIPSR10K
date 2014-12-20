@@ -16,6 +16,8 @@ class WriteBack:
         record = self.access_rob(active_list)
         if record is not None:
             self.curr_instrs = record
+
+
             # pass
 
 
@@ -59,6 +61,11 @@ class WriteBack:
             for i in self.curr_instrs:
 
                 df.xs(i.line_number)[str(self.clc)] = 'C'
+                for var in i.clean_soon:
+                    active_list.busy_bit_tables.setAsNonBusy(var)
+                    active_list.freeList.freeReg(var)
+                    active_list.map.remove_logical(var)
+
 
             self.make_address_available(active_list)
 

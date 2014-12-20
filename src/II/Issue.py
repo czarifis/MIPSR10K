@@ -24,6 +24,7 @@ class Issue:
         if pipeline_register == 0:
             self.issue_times = args.issue
             self.currIssuedInstrs = []
+
             about2go2execution_units = self.access_queue2get_one_instr_for_each_exe_unit(active_list)
             for k in about2go2execution_units:
                 self.currIssuedInstrs.append(about2go2execution_units[k].Instruction)
@@ -34,6 +35,7 @@ class Issue:
                 self.mispredicted = True
                 self.mispredicted_data = MISPREDICT
                 return None
+
             return about2go2execution_units
 
 
@@ -71,7 +73,7 @@ class Issue:
                 if it == args.issue:
                     break
             except Exception, e:
-                print 'BOOM clock:', self.clc, e
+                print 'ecxeption at issue clock:', self.clc, e
 
         for ii in about_to_be_deleted:
             del self.currInstrs[ii]
@@ -82,35 +84,37 @@ class Issue:
         d = {}
         list_tuple = active_list.fp_queue_pop('FPMUL')
         if list_tuple is None:
-            print 'Cannot de-queue from FPMUL list'
+            # print 'Cannot de-queue from FPMUL list'
             # Let's try to de-queue from the FPADD list
             list_tuple = active_list.fp_queue_pop('FPADD')
             if list_tuple is None:
-                print 'Cannot de-queue from FPADD list'
+                # print 'Cannot de-queue from FPADD list'
+                pass
             else:
-                print 'dequeueing from FPMUL'
+                # print 'dequeueing from FPMUL'
                 d['FP1'] = list_tuple
                 # return list_tuple
 
         else:
-            print 'dequeueing from FPMUL'
+            # print 'dequeueing from FPMUL'
             d['FP1'] = list_tuple
             # return list_tuple
 
         list_tuple = active_list.fp_queue_pop('FPADD')
         if list_tuple is None:
-            print 'Cannot de-queue from FPADD list'
+            # print 'Cannot de-queue from FPADD list'
             # Let's try to de-queue from the FPADD list
             list_tuple = active_list.fp_queue_pop('FPMUL')
             if list_tuple is None:
-                print 'Cannot de-queue from FPMUL list'
+                # print 'Cannot de-queue from FPMUL list'
+                pass
             else:
-                print 'dequeueing from FPADD'
+                # print 'dequeueing from FPADD'
                 d['FP2'] = list_tuple
                 # return list_tuple
 
         else:
-            print 'dequeueing from FPADD'
+            # print 'dequeueing from FPADD'
             d['FP2'] = list_tuple
             # return list_tuple
 
@@ -118,44 +122,47 @@ class Issue:
 
         list_tuple = active_list.int_queue_pop('ALU1')
         if list_tuple is None:
-            print 'Cannot de-queue from ALU2 list'
+            # print 'Cannot de-queue from ALU2 list'
             # Let's try to de-queue from the FPADD list
             list_tuple = active_list.int_queue_pop('ALU2')
             if list_tuple is None:
-                print 'Cannot de-queue from ALU2 list'
+                # print 'Cannot de-queue from ALU2 list'
+                pass
             else:
-                print 'dequeueing from ALU2'
+                # print 'dequeueing from ALU2'
                 d['ALU1'] = list_tuple
                 # return list_tuple
 
         else:
-            print 'dequeueing from ALU1'
+            # print 'dequeueing from ALU1'
             d['ALU1'] = list_tuple
             # return list_tuple
 
         list_tuple = active_list.int_queue_pop('ALU2')
         if list_tuple is None:
-            print 'Cannot de-queue from ALU2 list'
+            # print 'Cannot de-queue from ALU2 list'
             # Let's try to de-queue from the FPADD list
             list_tuple = active_list.fp_queue_pop('ALU1')
             if list_tuple is None:
-                print 'Cannot de-queue from ALU1 list'
+                # print 'Cannot de-queue from ALU1 list'
+                pass
             else:
-                print 'dequeueing from ALU1'
+                # print 'dequeueing from ALU1'
                 d['ALU2'] = list_tuple
                 # return list_tuple
 
         else:
-            print 'dequeueing from ALU2'
+            # print 'dequeueing from ALU2'
             d['ALU2'] = list_tuple
             # return list_tuple
 
         list_tuple = active_list.address_queue_pop()
         if list_tuple is None:
-            print 'Cannot de-queue from address point queue'
+            # print 'Cannot de-queue from address point queue'
             # Let's try to de-queue from the FPADD list
+            pass
         else:
-            print 'dequeueing from address point queue'
+            # print 'dequeueing from address point queue'
             d['A'] = list_tuple
             # return list_tuple
 

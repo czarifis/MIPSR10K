@@ -10,8 +10,11 @@ class ALU1:
         self.clc = 0
         self.curr_instr = None
         self.prev_dest = None
+        self.miss = False
+        self.mispredicted = False
+        self.mispredicted_data = None
 
-    def calc(self, df, active_list, reg):
+    def calc(self, df, active_list, reg, MISPREDICT):
         # if after_issue == 0:
         self.curr_instr = None
         # record = self.access_queue(active_list)
@@ -29,7 +32,15 @@ class ALU1:
 
 
 
+
+
             self.curr_instr = ins
+            if MISPREDICT is not None:
+                self.mispredicted = True
+                self.mispredicted_data = MISPREDICT
+                return None
+            if self.miss:
+                return
 
             if ins.prediction == '1':
                 err = {}
@@ -69,6 +80,9 @@ class ALU1:
         self.clc += 1
         if self.curr_instr is not None:
             df.xs(self.curr_instr.line_number)[str(self.clc)] = 'ALU1'
+        if self.mispredicted is True:
+            self.mispredicted = False
+            df.xs(self.curr_instr.line_number)[str(self.clc)] = 'X'
 
 
             # empty the "queue"

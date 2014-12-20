@@ -60,7 +60,7 @@ class IntegerQueue:
 
     # Adding instruction to integer Queue
     def add2queue(self, tp, busy_bit_table, register_map, instruction):
-        print '#### Integer Queue ####'
+        # print '#### Integer Queue ####'
         if tp is 'ALU1' or tp is 'ALU2':
             self.current_size += 1
 
@@ -72,8 +72,8 @@ class IntegerQueue:
                                 ' up to 16 instructions')
             else:
 
-                print 'rt:', instruction.rt, instruction.prt
-                print 'rs:', instruction.rs, instruction.prs
+                # print 'rt:', instruction.rt, instruction.prt
+                # print 'rs:', instruction.rs, instruction.prs
 
                 # Adding the current instruction to the Integer Queue
                 rec = IntegerQueueRecord(instruction.prt,
@@ -139,3 +139,40 @@ class IntegerQueue:
         return ret
 
 
+
+     # This function clears the data after
+    # the mispredicted branch from the integer queue
+    def mispredict_clear(self, data):
+        about_to_get_removed_alu1 = []
+        about_to_get_removed_alu2 = []
+        if not self.queue['ALU1']:
+            # No elements exist in the corresponding queue
+            return None
+        else:
+            # OK! Let's traverse the queue to find if there
+            # are any ready to go (non-busy) tuples
+            for element in self.queue['ALU1']:
+
+                if element.Instruction.line_number > data['line']:
+                    about_to_get_removed_alu1.append(element)
+                    # self.queue['FPADD'].remove(element)
+                    # self.current_size -= 1
+        if not self.queue['ALU2']:
+            # No elements exist in the corresponding queue
+            return None
+        else:
+            # OK! Let's traverse the queue to find if there
+            # are any ready to go (non-busy) tuples
+            for element in self.queue['ALU2']:
+
+                if element.get_line() > data['line']:
+                    about_to_get_removed_alu2.append(element)
+                    # self.queue['FPMUL'].remove(element)
+                    # self.current_size -= 1
+
+        for element in about_to_get_removed_alu1:
+            self.queue['ALU1'].remove(element)
+            self.current_size -= 1
+        for element in about_to_get_removed_alu2:
+            self.queue['ALU2'].remove(element)
+            self.current_size -= 1

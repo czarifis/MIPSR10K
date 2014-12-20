@@ -86,7 +86,7 @@ class Main:
 
         # WB has to be after LS stage!
         WBStage.calc(df, self.ActiveList)
-        mis_error = ALU1Stage.calc(df, self.ActiveList, self.AFTERISSUE)
+        mis_error = ALU1Stage.calc(df, self.ActiveList, self.AFTERISSUE, self.MISPREDICT)
         ALU2Stage.calc(df, self.ActiveList, self.AFTERISSUE, self.MISPREDICT)
         LSStage.calc(df, self.ALSReg, self.ActiveList, args)
 
@@ -183,7 +183,7 @@ if __name__ == '__main__':
     parser.add_argument('-in', dest="filename", type=argparse.FileType('r'), help='input file path', required=False)
     parser.add_argument('-out', dest="output", type=str, help='output file path', required=False)
     parser.add_argument('-issue', dest="issue", type=int, help='total number of instructions that can get '
-                                                               'issued (default is 1)', required=False)
+                                                               'issued (default is 4)', required=False)
     args = parser.parse_args()
 
     # Checking if input argument is given
@@ -224,7 +224,7 @@ if __name__ == '__main__':
     
     # compute number of clocks (might need to do sth better than this)
     # clocks = sum(1 for line in args.filename)+100
-    clocks = 500
+    clocks = 190
     print 'clocks', clocks
 
     # reset file pointer
@@ -246,5 +246,5 @@ if __name__ == '__main__':
     # class providing printing functionality
     pm = pr.prettifyme()
     
-    pm.printme(df, dfMap, args.output)
+    pm.printme(df, dfMap, args)
     # pm.printme(dfMap, 'map'+args.output+'.json')

@@ -64,7 +64,7 @@ class FPQueue:
 
     # Adding instruction to FP Queue
     def add2queue(self, tp, busy_bit_table, register_map, instruction):
-        print '#### FP Queue ####'
+        # print '#### FP Queue ####'
         if tp is 'FPADD' or tp is 'FPMUL':
             self.current_size += 1
 
@@ -76,8 +76,8 @@ class FPQueue:
                                 ' up to 16 instructions')
             else:
 
-                print 'rt:', instruction.rt, instruction.prt
-                print 'rs:', instruction.rs, instruction.prs
+                # print 'rt:', instruction.rt, instruction.prt
+                # print 'rs:', instruction.rs, instruction.prs
 
                 # Adding the current instruction to the Integer Queue
                 rec = FPQueueRecord(instruction.prt,
@@ -102,7 +102,7 @@ class FPQueue:
             # are any ready to go (non-busy) tuples
             for element in self.queue['FPADD']:
 
-                if element.get_line() > data['line']:
+                if element.Instruction.line_number > data['line']:
                     about_to_get_removed_fpadd.append(element)
                     # self.queue['FPADD'].remove(element)
                     # self.current_size -= 1

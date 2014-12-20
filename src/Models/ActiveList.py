@@ -124,7 +124,7 @@ class ActiveList:
         for e in self.ROB:
             if e.instruction is not None:
                 if branch.line_number == e.instruction.line_number:
-                    print 'found branch!!'
+                    # print 'found branch!!'
                     branch_str = e.instruction.initial_instr
                     branch_str = branch_str[:-1]
                     branch_str += '0'
@@ -187,7 +187,7 @@ class ActiveList:
 
             if e.done_but_not_graduated() is True:
                 if self.inst_graduated_previously is None:
-                    if e.instruction.line_number != 2:
+                    if self.check_if_prev_graduated(e.instruction.line_number):
                         e.graduated = True
                         ret_list.append(e.instruction)
                         self.inst_graduated_previously = e.instruction
@@ -208,7 +208,7 @@ class ActiveList:
                                 counter += 1
                                 if counter % 4 == 0:
                                     break
-                                print 'Boom'
+                                # print 'Boom'
                                 pass
                         else:
                             ll1 = self.line_graduated_previously + 1
@@ -268,6 +268,7 @@ class ActiveList:
     # to get issued.
     def issue_mispredict(self, data):
         self.fp_queue.mispredict_clear(data)
+        self.integer_queue.mispredict_clear(data)
 
 
 
@@ -339,7 +340,7 @@ class ActiveList:
     # object generation and pretty much everything other than the
     # Queues :)
     def process_decode(self, line, instr):
-
+        physical_reg_list = []
         if instr.op == 'L':
             # print instr.rt, '<-', instr.extra, '(', instr.rs, ')'
 
@@ -351,6 +352,7 @@ class ActiveList:
                 prs = self.map.isMapped(instr.rs)
                 if prs is None:
                     prs = self.freeList.assign()
+                    physical_reg_list.append(prs)
             self.map.setLog2Phy(instr.rs, prs)
 
             # prs = self.freeList.assign()
@@ -362,20 +364,22 @@ class ActiveList:
                 # prt = self.map.isMapped(instr.rt)
                 # if prt is None:
                 prt = self.freeList.assign()
+                physical_reg_list.append(prt)
 
             self.map.setLog2Phy(instr.rt, prt)
             if prs is None or prt is None:
                 self.map.setNote('We are out of Physical Registers')
 
             else:
-                print 'will map the following:'
-                print instr.rs, '->', prs
+                # print 'will map the following:'
+                # print instr.rs, '->', prs
                 self.map.setLog2Phy(instr.rs,prs)
-                print instr.rt, '->', prt
+                # print instr.rt, '->', prt
                 self.map.setLog2Phy(instr.rt,prt)
 
                 instr.prs = prs
                 instr.prt = prt
+                instr.clean_soon = physical_reg_list
                 
                 mappedInstr = prt, '<-', instr.extra, '(', prs, ')'
                 instr.add2MappedDecoding(mappedInstr)
@@ -396,6 +400,7 @@ class ActiveList:
                 prs = self.map.isMapped(instr.rs)
                 if prs == None:
                     prs = self.freeList.assign()
+                    physical_reg_list.append(prs)
             self.map.setLog2Phy(instr.rs,prs)
 
             if instr.rt == 'r0':
@@ -404,6 +409,7 @@ class ActiveList:
                 prt = self.map.isMapped(instr.rt)
                 if prt == None:
                     prt = self.freeList.assign()
+                    physical_reg_list.append(prt)
             self.map.setLog2Phy(instr.rt,prt)
             
             # prs = self.freeList.assign()
@@ -411,14 +417,15 @@ class ActiveList:
             if prs == None or prt == None:
                 self.map.setNote('We are out of Physical Registers')
             else:
-                print 'will map the following:'
-                print instr.rs,'->',prs
+                # print 'will map the following:'
+                # print instr.rs,'->',prs
                 self.map.setLog2Phy(instr.rs,prs)
-                print instr.rt,'->',prt
+                # print instr.rt,'->',prt
                 self.map.setLog2Phy(instr.rt,prt)
 
                 instr.prs = prs
                 instr.prt = prt
+                instr.clean_soon = physical_reg_list
 
                 mappedInstr = prt,'->',instr.extra,'(',prs,')'
                 instr.add2MappedDecoding(mappedInstr)
@@ -439,6 +446,7 @@ class ActiveList:
                 prs = self.map.isMapped(instr.rs)
                 if prs is None:
                     prs = self.freeList.assign()
+                    physical_reg_list.append(prs)
             self.map.setLog2Phy(instr.rs,prs)
 
             if instr.rt == 'r0':
@@ -447,31 +455,35 @@ class ActiveList:
                 prt = self.map.isMapped(instr.rt)
                 if prt is None:
                     prt = self.freeList.assign()
+                    physical_reg_list.append(prt)
             self.map.setLog2Phy(instr.rt,prt)
 
             if instr.rd == 'r0':
                 prd = 'I0'
             else:
                 prd = self.freeList.assign()
+                physical_reg_list.append(prd)
             self.map.setLog2Phy(instr.rd,prd)
+
             # prs = self.freeList.assign()
             # prt = self.freeList.assign()
 
             if prd is None or prs is None or prt is None:
                 self.map.setNote('We are out of Physical Registers')
             else:
-                print 'will map the following:'
-                print instr.rs,'->',prs
+                # print 'will map the following:'
+                # print instr.rs,'->',prs
                 self.map.setLog2Phy(instr.rs,prs)
-                print instr.rt,'->',prt
+                # print instr.rt,'->',prt
                 self.map.setLog2Phy(instr.rt,prt)
-                print instr.rd,'->',prd
+                # print instr.rd,'->',prd
                 self.map.setLog2Phy(instr.rd,prd)
 
 
                 instr.prs = prs
                 instr.prt = prt
                 instr.prd = prd
+                instr.clean_soon = physical_reg_list
                 mappedInstr = prd,'<-',prs,'INTOP',prt
                 instr.add2MappedDecoding(mappedInstr)
 
@@ -493,6 +505,7 @@ class ActiveList:
                 prs = self.map.isMapped(instr.rs)
                 if prs is None:
                     prs = self.freeList.assign()
+                    physical_reg_list.append(prs)
             self.map.setLog2Phy(instr.rs,prs)
 
             if instr.rt == 'r0':
@@ -501,12 +514,14 @@ class ActiveList:
                 prt = self.map.isMapped(instr.rt)
                 if prt is None:
                     prt = self.freeList.assign()
+                    physical_reg_list.append(prt)
             self.map.setLog2Phy(instr.rt,prt)
 
             if instr.rd == 'r0':
                 prd = 'I0'
             else:
                 prd = self.freeList.assign()
+                physical_reg_list.append(prd)
             self.map.setLog2Phy(instr.rd,prd)
             # prs = self.freeList.assign()
             # prt = self.freeList.assign()
@@ -514,18 +529,19 @@ class ActiveList:
             if prd == None or prs == None or prt == None:
                 self.map.setNote('We are out of Physical Registers')
             else:
-                print 'will map the following:'
-                print instr.rs,'->',prs
+                # print 'will map the following:'
+                # print instr.rs,'->',prs
                 self.map.setLog2Phy(instr.rs,prs)
-                print instr.rt,'->',prt
+                # print instr.rt,'->',prt
                 self.map.setLog2Phy(instr.rt,prt)
-                print instr.rd,'->',prd
+                # print instr.rd,'->',prd
                 self.map.setLog2Phy(instr.rd,prd)
 
 
                 instr.prs = prs
                 instr.prt = prt
                 instr.prd = prd
+                instr.clean_soon = physical_reg_list
                 mappedInstr = prd,'<-',prs,'FPADD',prt
                 instr.add2MappedDecoding(mappedInstr)
 
@@ -550,6 +566,7 @@ class ActiveList:
                 prs = self.map.isMapped(instr.rs)
                 if prs == None:
                     prs = self.freeList.assign()
+                    physical_reg_list.append(prs)
             self.map.setLog2Phy(instr.rs,prs)
 
             if instr.rt == 'r0':
@@ -558,6 +575,7 @@ class ActiveList:
                 prt = self.map.isMapped(instr.rt)
                 if prt == None:
                     prt = self.freeList.assign()
+                    physical_reg_list.append(prt)
 
             self.map.setLog2Phy(instr.rt,prt)
             
@@ -565,6 +583,7 @@ class ActiveList:
                 prd = 'I0'
             else:
                 prd = self.freeList.assign()
+                physical_reg_list.append(prd)
             self.map.setLog2Phy(instr.rd,prd)
             # prs = self.freeList.assign()
             # prt = self.freeList.assign()
@@ -572,12 +591,12 @@ class ActiveList:
             if prd == None or prs == None or prt == None:
                 self.map.setNote('We are out of Physical Registers')
             else:
-                print 'will map the following:'
-                print instr.rs,'->',prs
+                # print 'will map the following:'
+                # print instr.rs,'->',prs
                 self.map.setLog2Phy(instr.rs,prs)
-                print instr.rt,'->',prt
+                # print instr.rt,'->',prt
                 self.map.setLog2Phy(instr.rt,prt)
-                print instr.rd,'->',prd
+                # print instr.rd,'->',prd
                 self.map.setLog2Phy(instr.rd,prd)
 
                 mappedInstr = prd,'<-',prs,'FPMUL',prt
@@ -585,6 +604,7 @@ class ActiveList:
                 instr.prs = prs
                 instr.prt = prt
                 instr.prd = prd
+                instr.clean_soon = physical_reg_list
                 instr.add2MappedDecoding(mappedInstr)
 
                 # Will set the physical register used as a destination to busy
@@ -607,6 +627,7 @@ class ActiveList:
                 prs = self.map.isMapped(instr.rs)
                 if prs is None:
                     prs = self.freeList.assign()
+                    physical_reg_list.append(prs)
             self.map.setLog2Phy(instr.rs, prs)
 
             if instr.rt == 'r0':
@@ -615,6 +636,7 @@ class ActiveList:
                 prt = self.map.isMapped(instr.rt)
                 if prt is None:
                     prt = self.freeList.assign()
+                    physical_reg_list.append(prt)
             self.map.setLog2Phy(instr.rt,prt)
 
             # prs = self.freeList.assign()
@@ -624,14 +646,15 @@ class ActiveList:
                 self.map.setNote('We are out of Physical Registers')
 
             else:
-                print 'will map the following:'
-                print instr.rs,'->',prs
+                # print 'will map the following:'
+                # print instr.rs,'->',prs
                 self.map.setLog2Phy(instr.rs,prs)
-                print instr.rt,'->',prt
+                # print instr.rt,'->',prt
                 self.map.setLog2Phy(instr.rt,prt)
                 mappedInstr = 'BEQ,',prs,',',prt,',xx,',instr.prediction
                 instr.prs = prs
                 instr.prt = prt
+                instr.clean_soon = physical_reg_list
 
                 instr.ROB = copy.deepcopy(self.ROB)
 

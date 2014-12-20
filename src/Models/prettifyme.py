@@ -27,6 +27,7 @@ class prettifyme:
             <li><a href="#3">Busy Bit</a></li>
             <li><a href="#4">Integer Queue</a></li>
             <li><a href="#5">FP Queue</a></li>
+            <li><a href="#code">Trace File</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
           <p class="nav navbar-text">CSE 240A - Graduate Computer Architecture</p>
@@ -56,7 +57,8 @@ class prettifyme:
     '''
         This function outputs the structures maintained by this program to CSV files
     '''
-    def printme(self,df,dfmap,output):
+    def printme(self,df,dfmap,args):
+        output = args.output
         # with open(output, 'w') as f:
         #     f.write(self.HEADER)
         #     f.write(df.to_html(classes='df',escape=False,col_space=10))
@@ -68,12 +70,14 @@ class prettifyme:
         # writer = ExcelWriter('output.xlsx')
         # df.to_excel(writer,'Sheet1')
         # writer.save()
-        self.finalize(output)
+        self.finalize(args)
 
     '''
         This function generates html tables from the partial CSV files
     '''
-    def finalize(self,output):
+    def finalize(self, args):
+        output = args.output
+        input = args.filename
         import sys
         import os
         import csv
@@ -105,6 +109,20 @@ class prettifyme:
                 i += 1
 
             table_string += '</table>'
+
+        table_string += '<H3 id="code">Trace File: </H3><br/><div>' \
+                        '<table id="timeline" class="table table-hover ' \
+                        'table-bordered "><tr><td>'
+
+        args.filename.seek(0)
+        counter = 0
+        for line in args.filename:
+            counter += 1
+            currLineStr = line.strip()
+            table_string += str(counter) + ' '
+            table_string += currLineStr
+            table_string += '<br/>'
+        table_string +='</td></tr></table></div>'
             
             # sys.stdout.write( table_string )
         with open(output+'.html', 'w') as f:

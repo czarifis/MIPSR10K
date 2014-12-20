@@ -78,7 +78,7 @@ class Fetch:
         
         for k in sorted(self.currInstrs.keys()):
             df.loc[k] = [self.currInstrs[k], '', ''] + a
-            if self.mispredicted is True and self.mispredicted_data['line'] < k.line_number:
+            if self.mispredicted is True and self.mispredicted_data['line'] < k:
                 df.xs(k)[str(self.clc)] = 'X'
             else:
                 df.xs(k)[str(self.clc)] = 'IF'
