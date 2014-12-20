@@ -247,4 +247,6 @@ if __name__ == '__main__':
     pm = pr.prettifyme()
     
     pm.printme(df, dfMap, args)
+
+    print 'Done!'
     # pm.printme(dfMap, 'map'+args.output+'.json')

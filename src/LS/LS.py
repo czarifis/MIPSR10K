@@ -52,10 +52,11 @@ class LS:
 
         list_tuple = active_list.address_queue_pop2execute()
         if list_tuple is None:
-            print 'Cannot de-queue from (LS) address point queue'
+            # print 'Cannot de-queue from (LS) address point queue'
+            pass
             # Let's try to de-queue from the FPADD list
         else:
-            print 'dequeueing from address point queue'
+            # print 'dequeueing from address point queue'
             return list_tuple
             # return list_tuple
 

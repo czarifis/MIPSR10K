@@ -22,10 +22,10 @@ class Fetch:
         self.currInstrs = {}
         for line in args.filename:
             currLineStr = line.strip() 
-            print( currLineStr )
+            # print( currLineStr )
             # self.currInstrs.append(currLineStr)
             self.i += 1
-            print 'current line:', self.i
+            # print 'current line:', self.i
             self.currInstrs[self.i] = (self.i, currLineStr)
             # print 'line',line
             if self.i % args.issue == 0:
@@ -44,13 +44,13 @@ class Fetch:
         if self.mispredicted is False:
             ret = self.fetch_n_linesPerClck(df, args)
         else:
-            print 'need to re-fetch instructions'
+            # print 'need to re-fetch instructions'
             record = active_list.branch_stack.pop()
             ret = active_list.return_instructions_after_branch(record.mispredicted_branch)
             self.mispredicted = False
             self.currInstrs = ret
 
-            print record
+            # print record
             pass
 
         if MISPREDICT is not None:

@@ -358,7 +358,7 @@ class ActiveList:
             # prs = self.freeList.assign()
             # This is the destination
 
-            if instr.rt is 'r0':
+            if instr.rt == 'r0':
                 prt = 'I0'
             else:
                 # prt = self.map.isMapped(instr.rt)

@@ -27,6 +27,7 @@ class prettifyme:
             <li><a href="#3">Busy Bit</a></li>
             <li><a href="#4">Integer Queue</a></li>
             <li><a href="#5">FP Queue</a></li>
+            <li><a href="#5">Address Queue</a></li>
             <li><a href="#code">Trace File</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">

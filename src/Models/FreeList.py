@@ -26,7 +26,7 @@ class FreeList:
     '''
     def assign(self, source = None):
         if source == None:
-            print 'Assigning a new physical register'
+            # print 'Assigning a new physical register'
             try:
                 assigned = self.list[0]
                 self.list.remove(assigned)
@@ -38,7 +38,8 @@ class FreeList:
                 # We're out of physical registers
                 return None
         else:
-            print 'assignment error'
+            # print 'assignment error'
+            pass
         
 
     '''
@@ -77,12 +78,12 @@ class FreeList:
 
 if __name__ == '__main__':
     l = FreeList()
-    print l.list
+    # print l.list
     r = l.assign()
-    print 'assigned:', r
-    print l.list
+    # print 'assigned:', r
+    # print l.list
     r2 = l.assign()
-    print 'assigned:', r2
+    # print 'assigned:', r2
     l.free([r])
-    print l.list
+    # print l.list
     l.assign4InParallel()

@@ -90,7 +90,7 @@ class AddressQueue:
 
     # Adding instruction to integer Queue
     def add2queue(self, busy_bit_table, register_map, instruction):
-        print '#### Address Queue ####'
+        # print '#### Address Queue ####'
         # if tp is 'L' or tp is 'S':
         self.current_size += 1
         # Checking if there's enough space in the queue for a new instruction
@@ -101,7 +101,7 @@ class AddressQueue:
                             ' up to 16 instructions')
         else:
             # print 'rt:', instruction.rt, instruction.prt
-            print 'rs:', instruction.rs, instruction.prs
+            # print 'rs:', instruction.rs, instruction.prs
 
             # Adding the current instruction to the Integer Queue
 
@@ -175,7 +175,7 @@ class AddressQueue:
             e = self.queue[0]
             if e.is_busy() is False and e.Address_computed is True:
                 if e.Instruction.op == 'S':
-                    print e, 'is ready to LS'
+                    # print e, 'is ready to LS'
                     self.queue.remove(e)
                     self.current_size -= 1
                     return e
@@ -187,7 +187,7 @@ class AddressQueue:
                         else:
                         #     e.issued = True
                         #     return e
-                            print e, 'is ready to LS'
+                        #     print e, 'is ready to LS'
                             self.queue.remove(e)
                             self.current_size -= 1
                             return e

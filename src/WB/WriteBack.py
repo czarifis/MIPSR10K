@@ -26,13 +26,15 @@ class WriteBack:
 
     def access_rob(self, active_list):
         if self.clc == 10:
-            print 'boom'
+            # print 'boom'
             pass
         list_inst = active_list.pop_from_active_list()
         if not list_inst:
-            print 'Cannot write back'
+            # print 'Cannot write back'
+            pass
         else:
-            print 'removing from active list'
+            # print 'removing from active list'
+            pass
             return list_inst
         return None
 

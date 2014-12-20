@@ -130,7 +130,7 @@ class Instruction:
             ret = 'BEQ,',self.rs,',',self.rt,',xx,',self.prediction
         ret = str(ret)#''.join(ret)
         self.add2Decoding(ret)
-        print ret
+        # print ret
         return ret
 
     def clear_instruction(self):

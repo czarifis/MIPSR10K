@@ -82,7 +82,7 @@ class Decode:
                 try:
                     activeList.process_add2queue(Inst)
                 except:
-                    print 'A Queue is full I need to stall the Decode stage', line
+                    # print 'A Queue is full I need to stall the Decode stage', line
                     continue
 
 
@@ -94,7 +94,7 @@ class Decode:
                 # if it == 4:
                 #     break
             except:
-                print 'An Active list is full I need to stall the Decode stage', line
+                # print 'An Active list is full I need to stall the Decode stage', line
                 break
 
         for ii in about_to_be_deleted:
@@ -121,7 +121,7 @@ class Decode:
                 df.xs(k)['Logical'] = self.currDecodedInstrs[k].toStr()
                 df.xs(k)['Physical'] = self.currDecodedInstrs[k].toMappedStr(activeList.map.LogToPhy)
                 
-                print k, self.clc
+                # print k, self.clc
                 df.xs(k)[str(self.clc)] = 'ID'
 
         if self.decoded_but_not_added2the_queue:
