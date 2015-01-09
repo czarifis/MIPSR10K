@@ -1,3 +1,7 @@
+## MIPSR10K Simulator
+
+This is the final version of the Project that was developed for the CSE240A - Graduate Computer Architecture class. It contains the implementation of the MIPSR10K simulator.
+
 ###Notes:
 * Instructions first "complete" and then if they are not waiting for other instructions they 'graduate' 
 * Physical registers range from 1 to 64 (there is no register 0)
