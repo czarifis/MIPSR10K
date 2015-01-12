@@ -8,6 +8,20 @@ This is the final version of the Project that was developed for the CSE240A - Gr
 * The mips10k folder contains the source code and more benchmarks that were used to verify the proper execution of the simulator ("benchmarks" is the name of folder that contains those tests)
 
 
+To view some of the output test results click on any of the following links:
+
+* [test1](http://czarifis.github.io/MIPSR10K/test%20results/mytest.html)
+* [Test Branch 1](http://czarifis.github.io/MIPSR10K/test%20results/test_b1.html)
+* [Test Branch 1](http://czarifis.github.io/MIPSR10K/test%20results/test_b1.html)
+* [Test Branch 2](http://czarifis.github.io/MIPSR10K/test%20results/test_b6.html)
+* [Test load store 1](http://czarifis.github.io/MIPSR10K/test%20results/test_ls1.html)
+* [Test load store 2](http://czarifis.github.io/MIPSR10K/test%20results/test_ls4.html)
+* [Test stress 1](http://czarifis.github.io/MIPSR10K/test%20results/test_s1.html)
+* [Test stress 2](http://czarifis.github.io/MIPSR10K/test%20results/test_s5.html)
+* [Test stress 3](http://czarifis.github.io/MIPSR10K/test%20results/test_t1.html)
+* [Test stress 4](http://czarifis.github.io/MIPSR10K/test%20results/test_t5.html)
+
+
 ### Testing - Evaluation
 
 This project works on Python 2.7.8 and requires the Pandas library
